@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}django-db-tenants demo{% endblock %}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 48rem; margin: 2rem auto; padding: 0 1rem; }
+    header { display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; margin-bottom: 1rem; }
+    .tenant { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <header>
+    <p>Tenant: <span class="tenant">{% if request.tenant %}{{ request.tenant.name }}{% else %}control plane{% endif %}</span></p>
+    <p>
+      {% if user.is_authenticated %}
+        {{ user.get_username }}
+        <form method="post" action="{% url 'logout' %}" style="display:inline">{% csrf_token %}<button>Log out</button></form>
+      {% else %}
+        <a href="{% url 'login' %}">Log in</a>
+        {% if request.tenant.sso_enabled %} · <a href="{% url 'django_db_tenants:sso_login' %}">Log in with SSO</a>{% endif %}
+      {% endif %}
+    </p>
+  </header>
+  {% block content %}{% endblock %}
+</body>
+</html>

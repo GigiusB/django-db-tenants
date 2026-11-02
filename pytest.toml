@@ -1,0 +1,20 @@
+[pytest]
+minversion = "9.0"
+testpaths = ["tests"]
+# tests/_extra holds shared test utilities (importable as `testutils`),
+# tests/demo is the example Django project (importable as `demo`, `notes`).
+pythonpath = ["tests/_extra", "tests/demo"]
+DJANGO_SETTINGS_MODULE = "testutils.settings"
+django_find_project = false
+addopts = [
+    "--import-mode=importlib",
+    "--strict-markers",
+    "--strict-config",
+    "-ra",
+]
+xfail_strict = true
+filterwarnings = [
+    "error",
+    # Django 5.x only: admin URLField for Client.oidc_issuer (Django 6 defaults to https).
+    "ignore:The default scheme will be changed from 'http' to 'https':DeprecationWarning",
+]
