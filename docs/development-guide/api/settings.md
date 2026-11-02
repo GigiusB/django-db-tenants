@@ -15,7 +15,7 @@ DB_TENANTS = {
 
 | Key | Type | Default | Effect |
 |---|---|---|---|
-| `TEMPLATE_ALIAS` | `str` | `"default"` | `DATABASES` alias of the [shared database](../../../glossary/#shared-database), which holds the client registry and is the template for every tenant connection. Clients cannot use it as slug |
+| `TEMPLATE_ALIAS` | `str` | `"default"` | `DATABASES` alias of the [shared database](../../../glossary/#shared-database), which holds the client registry. A copy of its settings is passed to every [database strategy](../strategies/); the built-in `TemplateOverlay` derives tenant connections from it. Clients cannot use it as slug |
 | `SHARED_APPS` | iterable of app labels | `("django_db_tenants",)` | Apps whose tables live only in the shared database. Keep it small: an app with a foreign key to `auth.User` or `contenttypes` must stay a tenant app |
 | `TENANT_APPS_ON_DEFAULT` | `bool` | `True` | Also create tenant-app tables in the shared database, so superusers can log in on a [control host](../../../glossary/#control-host) |
 | `DATABASE_STRATEGIES` | iterable of dotted paths | `()` | Extra [database strategies](../strategies/) clients may use, registered when the app is ready. The built-in `TemplateOverlay` is always registered |

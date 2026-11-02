@@ -2,6 +2,8 @@
 
 `Client.db_params` (the database strategy's parameters, including the database password) and `Client.oidc_client_secret` are stored encrypted with [Fernet](../../../glossary/#fernet). Code reads and writes plain values; the fields encrypt on the way in and decrypt on the way out.
 
+Encryption covers the database columns only. The registry caches `Client` objects with these values decrypted; see [Known constraints](../../architecture/#known-constraints).
+
 ## The key
 
 | `ENCRYPTION_KEY` | Key used |

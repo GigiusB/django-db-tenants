@@ -38,8 +38,10 @@ MIDDLEWARE = [
 DATABASE_ROUTERS = ["django_db_tenants.router.TenantRouter"]
 
 DATABASES = {
-    # The template: its ENGINE/OPTIONS/CONN_MAX_AGE etc. are copied for each tenant.
-    # It also stores the client registry. Its user needs CREATEDB to provision tenants.
+    # The shared database: stores the client registry. It is also the starting point of
+    # tenant connections: the default database strategy (TemplateOverlay) copies it and
+    # lays each client's db_params (HOST, USER, PASSWORD, OPTIONS...) over it. The account
+    # of the resulting connection needs CREATEDB to provision tenants.
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "control",
@@ -194,7 +196,7 @@ CACHES = {
 
 * **Connections**: each worker may hold one connection per tenant it has served. Keep `CONN_MAX_AGE` low or put PgBouncer in front for large fleets.
 * **Cache**: use a shared cache (Redis/Memcached) in production so all workers see client changes within `CACHE_TTL`, and enable [cache isolation](#cache-isolation). With `LocMemCache` each process has its own TTL window, which still works, just less consistently.
-* **Secrets**: `db_params` (which holds the database password) and `oidc_client_secret` are Fernet-encrypted at rest. Set `ENCRYPTION_KEY` explicitly; otherwise rotating `SECRET_KEY` makes them unreadable.
+* **Secrets**: `db_params` (which holds the database password) and `oidc_client_secret` are Fernet-encrypted at rest. Set `ENCRYPTION_KEY` explicitly; otherwise rotating `SECRET_KEY` makes them unreadable. The registry caches `Client` objects with these values decrypted, so keep the cache private.
 * **Tests**: see [Development](#development) and `tests/_extra/testutils` for fixtures that give each test real, isolated tenant databases.
 
 ## Development

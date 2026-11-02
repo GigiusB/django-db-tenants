@@ -176,6 +176,7 @@ Tenants share the cache servers. `cache.tenant_key_func`, set as a cache's `KEY_
 - **The slug is permanent.** It is the database alias, a cache namespace and part of the OIDC app name; the admin makes it read-only after creation. `default` and the template alias are reserved (`Client.clean()`).
 - **Streaming responses.** The context is reset when the view returns. The body of a `StreamingHttpResponse` is produced after that, so queries made while streaming run without the tenant (on the shared database) unless the generator activates it with `tenant_context()`.
 - **No cross-database relations.** See [Database routing](#database-routing).
+- **Secrets in the cache.** The registry caches whole `Client` objects, pickled, in `CACHE_ALIAS`: the cached copy holds `db_params` (database passwords included) and the OIDC client secret **decrypted**. Use a cache that only the application can reach, with authentication and TLS where the network is shared.
 
 ## Next steps
 

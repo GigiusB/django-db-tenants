@@ -11,6 +11,7 @@ This site is the **developer's guide**. It is for:
 
 - One **shared database** holds the client registry. Every client (the [tenant](glossary/#tenant)) gets its **own database**, with its own `auth` users, sessions and application tables.
 - Tenant databases are added to `django.db.connections` **while the process runs**, so adding, suspending or re-pointing a client never needs a restart.
+- How each client's database is reached, created and dropped is **pluggable**: a [database strategy](glossary/#database-strategy) per client, configured by encrypted parameters. The built-in one derives tenant connections from the shared database's settings.
 - Each client can sign its users in through its own **OpenID Connect** identity provider (Entra ID, Okta, Keycloak, Google and others), configured as data on the client row.
 
 ## Where to start

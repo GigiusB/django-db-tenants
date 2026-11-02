@@ -12,8 +12,9 @@ from django.conf import settings
 from django.utils.module_loading import import_string
 
 DEFAULTS = {
-    # Alias whose connection settings are used as a template for every tenant DB.
-    # Also the alias that holds the Client registry (shared tables).
+    # Alias that holds the Client registry (shared tables). A copy of its connection
+    # settings is passed to every database strategy; the built-in TemplateOverlay
+    # derives tenant connections from it.
     "TEMPLATE_ALIAS": "default",
     # Apps whose tables live ONLY in the template/shared database.
     # Keep this small: anything with a FK to auth.User or contenttypes must be

@@ -65,7 +65,7 @@ Shared helpers live in `tests/_extra/testutils` (importable as `testutils`); fix
 | Fixture | Gives |
 |---|---|
 | `acme`, `globex` | an `active` client with a migrated database and the domain `<slug>.test` |
-| `tenant_factory` | `tenant_factory("initech", domains=[...], migrated=True, **fields)`: more tenants, or an empty database with `migrated=False` |
+| `tenant_factory` | `tenant_factory("initech", domains=[...], migrated=True, **fields)`: more tenants, or an empty database with `migrated=False`. `fields` go to the client, so `db_strategy=` / `db_params=` pick another strategy; the database is still created by cloning, whatever the strategy |
 | `tenant_db_name` | `tenant_db_name("acme")`: a name for a database the test creates itself (for example through `provision()`); dropped at the end of the test |
 | `tenant_template_db` | name of the session-wide migrated template database |
 

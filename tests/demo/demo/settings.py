@@ -60,8 +60,9 @@ TEMPLATES = [
     },
 ]
 
-# django-db-tenants: "default" is both the shared database (client registry) and the
-# template every tenant connection is copied from.
+# django-db-tenants: "default" is the shared database (client registry) and the starting
+# point of tenant connections: the default database strategy (TemplateOverlay) copies it
+# and lays each client's db_params over it. The demo tenants set none: only db_name differs.
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",

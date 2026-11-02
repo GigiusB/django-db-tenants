@@ -4,7 +4,7 @@ Terms used across the developer's guide, in alphabetical order.
 
 ## Client
 
-The row in the [shared database](#shared-database) that describes one [tenant](#tenant): name, slug, status, database connection and SSO settings. Model: `django_db_tenants.models.Client`. See the [Client model reference](../development-guide/models/client/).
+The row in the [shared database](#shared-database) that describes one [tenant](#tenant): name, slug, status, [database strategy](#database-strategy) and its parameters, and SSO settings. Model: `django_db_tenants.models.Client`. See the [Client model reference](../development-guide/models/client/).
 
 ## Config version
 
@@ -36,7 +36,7 @@ OpenID Connect, the authentication layer on top of OAuth 2.0 that the library us
 
 ## Provisioning
 
-Onboarding a client's database: create it, run migrations on it and mark the client `active`. Done by `provision()`, the `provision_tenant` command or the admin action. See [Provisioning](../development-guide/api/provisioning/).
+Onboarding a client's database: create it (through the client's [database strategy](#database-strategy)), run migrations on it and mark the client `active`. Done by `provision()`, the `provision_tenant` command or the admin action. See [Provisioning](../development-guide/api/provisioning/).
 
 ## Resolver
 
@@ -48,7 +48,7 @@ OpenID Connect logout started by the relying party (the Django site): after the 
 
 ## Runtime registration
 
-Adding a tenant's connection settings to `django.db.connections` while the process runs, by `ensure_db_registered()`. See [Architecture](../development-guide/architecture/#runtime-database-registration).
+Adding a tenant's connection settings, built by the client's [database strategy](#database-strategy), to `django.db.connections` while the process runs, by `ensure_db_registered()`. See [Architecture](../development-guide/architecture/#runtime-database-registration).
 
 ## Shared apps
 
@@ -60,7 +60,7 @@ The database behind the [template alias](#template-alias). It holds the client r
 
 ## Template alias
 
-The `DATABASES` alias (`DB_TENANTS["TEMPLATE_ALIAS"]`, default `"default"`) that is both the [shared database](#shared-database) and the template every tenant connection is copied from.
+The `DATABASES` alias (`DB_TENANTS["TEMPLATE_ALIAS"]`, default `"default"`) that is the [shared database](#shared-database) and the starting point of tenant connections: every [database strategy](#database-strategy) receives a copy of its settings, and the built-in `TemplateOverlay` lays the client's `db_params` over them.
 
 ## Tenant
 
