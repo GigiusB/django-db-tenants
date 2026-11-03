@@ -11,7 +11,7 @@ AUTHORIZE_URL = "https://idp.example.com/authorize"
 
 @dataclass
 class FakeOIDCClient:
-    """Mimics the subset of ``authlib`` ``DjangoOAuth2App`` used by ``django_db_tenants.sso.views``."""
+    """Mimics the subset of ``authlib`` ``DjangoOAuth2App`` used by ``django_db_tenants.oidc.views``."""
 
     userinfo_claims: dict[str, Any] = field(default_factory=dict)
     id_token: str = "fake-id-token"

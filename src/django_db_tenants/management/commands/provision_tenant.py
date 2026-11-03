@@ -35,9 +35,6 @@ class Command(BaseCommand):
         )
         for option, key in PARAM_OPTIONS.items():
             parser.add_argument(f"--{option.replace('_', '-')}", default="", help=f"Sets db_params {key}.")
-        parser.add_argument("--oidc-issuer", default="")
-        parser.add_argument("--oidc-client-id", default="")
-        parser.add_argument("--oidc-client-secret", default="")
         parser.add_argument("--skip-create-db", action="store_true")
         parser.add_argument("--skip-migrate", action="store_true")
 
@@ -56,10 +53,6 @@ class Command(BaseCommand):
         if o["db_strategy"]:
             client.db_strategy = o["db_strategy"]
         client.db_params = {**(client.db_params or {}), **params}
-        for attr in ("oidc_issuer", "oidc_client_id", "oidc_client_secret"):
-            if o[attr]:
-                setattr(client, attr, o[attr])
-        client.sso_enabled = bool(client.oidc_issuer and client.oidc_client_id)
         try:
             client.full_clean()
         except Exception as exc:

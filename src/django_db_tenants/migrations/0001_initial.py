@@ -1,4 +1,5 @@
 import django.db.models.deletion
+import strategy_field.fields
 from django.db import migrations, models
 
 import django_db_tenants.fields
@@ -6,6 +7,7 @@ import django_db_tenants.fields
 
 class Migration(migrations.Migration):
     initial = True
+
     dependencies = []
 
     operations = [
@@ -29,36 +31,27 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "db_engine",
-                    models.CharField(blank=True, help_text="e.g. django.db.backends.postgresql", max_length=100),
-                ),
-                ("db_name", models.CharField(max_length=200)),
-                ("db_host", models.CharField(blank=True, max_length=255)),
-                ("db_port", models.CharField(blank=True, max_length=10)),
-                ("db_user", models.CharField(blank=True, max_length=200)),
-                ("db_password", django_db_tenants.fields.EncryptedTextField(blank=True)),
-                (
-                    "db_options",
-                    models.JSONField(
-                        blank=True, default=dict, help_text="Merged into the OPTIONS dict (e.g. sslmode)."
+                    "db_strategy",
+                    strategy_field.fields.StrategyField(
+                        default="django_db_tenants.strategies.TemplateOverlay",
+                        help_text="How the database is reached, created and dropped.",
                     ),
                 ),
-                ("sso_enabled", models.BooleanField(default=False)),
+                ("db_name", models.CharField(max_length=200)),
                 (
-                    "oidc_issuer",
-                    models.URLField(blank=True, help_text="Issuer URL; /.well-known/openid-configuration is appended."),
-                ),
-                ("oidc_client_id", models.CharField(blank=True, max_length=255)),
-                ("oidc_client_secret", django_db_tenants.fields.EncryptedTextField(blank=True)),
-                ("oidc_scopes", models.CharField(default="openid email profile", max_length=255)),
-                (
-                    "oidc_auto_create_users",
-                    models.BooleanField(default=True, help_text="Create a local user on first SSO login."),
+                    "db_params",
+                    django_db_tenants.fields.EncryptedJSONField(
+                        blank=True,
+                        default=dict,
+                        help_text='Strategy parameters, encrypted at rest, e.g. {"HOST": "db2", "PASSWORD": "...", "OPTIONS": {"sslmode": "require"}}.',
+                    ),
                 ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
             ],
-            options={"ordering": ["name"]},
+            options={
+                "ordering": ["name"],
+            },
         ),
         migrations.CreateModel(
             name="ClientDomain",
@@ -78,6 +71,8 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ["-is_primary", "domain"]},
+            options={
+                "ordering": ["-is_primary", "domain"],
+            },
         ),
     ]

@@ -6,7 +6,7 @@ the test suite runs against (`testutils.settings` extends `demo.settings`).
 | Path | What it shows |
 |---|---|
 | `demo/settings.py` | The settings the library needs (look for `# django-db-tenants`) |
-| `demo/urls.py` | Mounting the per-tenant SSO views |
+| `demo/urls.py` | Django's own login views (`django.contrib.auth.urls`): each tenant's users log in with a password stored in its database |
 | `demo/views.py` | `request.tenant` / `get_current_tenant()`, an exempt health check |
 | `notes/` | An ordinary app whose tables live in every tenant database |
 | `notes/tasks.py` | Background jobs with `@with_tenant` and `for_each_tenant` |
@@ -29,7 +29,7 @@ Then open:
 
 * <http://acme.localhost:8000/>: log in as `alice` / `demo`
 * <http://globex.localhost:8000/>: log in as `bob` / `demo` (alice does not exist here)
-* <http://localhost:8000/admin/>: control plane: manage clients, domains and SSO settings
+* <http://localhost:8000/admin/>: control plane: manage clients and domains
 * <http://acme.localhost:8000/whoami/>: which database served the request
 
 Browsers resolve `*.localhost` to `127.0.0.1`, so no `/etc/hosts` changes are needed.

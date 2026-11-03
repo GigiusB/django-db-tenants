@@ -7,16 +7,21 @@ from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_http_methods
 
-from ..conf import app_settings
-from .oidc import get_oidc_client
+from .client import get_oidc_client
+from .conf import oidc_settings
+from .strategy import get_oidc_config
 
 SESSION_ID_TOKEN = "db_tenants_sso_id_token"  # noqa: S105 - a session key, not a secret
 SESSION_NEXT = "db_tenants_sso_next"
 
 
+def _uses_oidc(client) -> bool:
+    return client is not None and get_oidc_config(client) is not None
+
+
 def _tenant(request):
     client = getattr(request, "tenant", None)
-    if client is None or not client.sso_enabled:
+    if not _uses_oidc(client):
         raise Http404("SSO is not available for this host.")
     return client
 
@@ -34,7 +39,7 @@ def login(request: HttpRequest) -> HttpResponse:
     client = _tenant(request)
     oidc = get_oidc_client(client)
     request.session[SESSION_NEXT] = _safe_next(request, request.GET.get("next"))
-    redirect_uri = request.build_absolute_uri(reverse("django_db_tenants:sso_callback"))
+    redirect_uri = request.build_absolute_uri(reverse("db_tenants_oidc:callback"))
     return oidc.authorize_redirect(request, redirect_uri)
 
 
@@ -48,13 +53,13 @@ def callback(request: HttpRequest) -> HttpResponse:
     token = oidc.authorize_access_token(request)  # validates state, nonce, id_token signature
     userinfo = token.get("userinfo") or oidc.userinfo(token=token)
 
-    user = app_settings.SSO_USER_SYNC(client, dict(userinfo), request)
+    user = oidc_settings.USER_SYNC(client, dict(userinfo), request)
     if user is None:
         return HttpResponseForbidden("Your account is not allowed to sign in here.")
 
-    auth.login(request, user, backend=app_settings.SSO_AUTH_BACKEND)
+    auth.login(request, user, backend=oidc_settings.AUTH_BACKEND)
     request.session[SESSION_ID_TOKEN] = token.get("id_token")
-    next_url = request.session.pop(SESSION_NEXT, None) or app_settings.SSO_LOGIN_REDIRECT_URL
+    next_url = request.session.pop(SESSION_NEXT, None) or oidc_settings.LOGIN_REDIRECT_URL
     return redirect(next_url)
 
 
@@ -64,8 +69,8 @@ def logout(request: HttpRequest) -> HttpResponse:
     id_token = request.session.get(SESSION_ID_TOKEN)
     auth.logout(request)
 
-    post_logout = request.build_absolute_uri(app_settings.SSO_LOGOUT_REDIRECT_URL)
-    if client is not None and client.sso_enabled and app_settings.SSO_RP_INITIATED_LOGOUT and id_token:
+    post_logout = request.build_absolute_uri(oidc_settings.LOGOUT_REDIRECT_URL)
+    if _uses_oidc(client) and oidc_settings.RP_INITIATED_LOGOUT and id_token:
         metadata = get_oidc_client(client).load_server_metadata()
         end_session = metadata.get("end_session_endpoint")
         if end_session:

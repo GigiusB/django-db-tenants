@@ -23,16 +23,12 @@ DB_TENANTS = {
 | `CONTROL_HOSTS` | iterable of host names | `()` | Hosts that `resolve_by_host` serves from the shared database. Compared without port, case-insensitively |
 | `EXEMPT_PATHS` | iterable of path prefixes | `("/healthz",)` | Requests whose path starts with one of these skip resolution; `request.tenant` is `None` |
 | `NOT_FOUND_HANDLER` | dotted path, callable or `None` | `None` | `callable(request, exc) -> HttpResponse` for requests whose resolver raised `TenantError`. `None` returns `404 Unknown tenant.` |
-| `CACHE_ALIAS` | `str` | `"default"` | `CACHES` alias for host and slug lookups and for the OIDC discovery metadata |
+| `CACHE_ALIAS` | `str` | `"default"` | `CACHES` alias for host and slug lookups (and for `OidcStrategy`'s discovery metadata) |
 | `CACHE_TTL` | `int`, seconds | `60` | Lifetime of the cached lookups; the longest a per-process cache can serve a stale client |
-| `ENCRYPTION_KEY` | `str` or `bytes`, or `None` | `None` | Fernet key for `db_params` and `oidc_client_secret`. `None` derives a key from `SECRET_KEY`. See [Encryption](../encryption/) |
-| `SSO_USER_SYNC` | dotted path or callable | `"django_db_tenants.sso.sync.default_user_sync"` | `callable(client, userinfo, request) -> user | None`; `None` refuses the login. See [SSO](../sso/) |
-| `SSO_AUTH_BACKEND` | dotted path | `"django.contrib.auth.backends.ModelBackend"` | Backend recorded in the session by `auth.login` after SSO |
-| `SSO_LOGIN_REDIRECT_URL` | URL | `"/"` | Where `/sso/callback/` redirects when no safe `next` was given |
-| `SSO_LOGOUT_REDIRECT_URL` | URL | `"/"` | Where `/sso/logout/` redirects, and the `post_logout_redirect_uri` sent to the IdP |
-| `SSO_RP_INITIATED_LOGOUT` | `bool` | `True` | On logout, also end the IdP session through its `end_session_endpoint` |
+| `ENCRYPTION_KEY` | `str` or `bytes`, or `None` | `None` | Fernet key for `db_params`. `None` derives a key from `SECRET_KEY`. See [Encryption](../encryption/) |
+`RESOLVER` and `NOT_FOUND_HANDLER` accept a dotted path, imported on each access, or the callable itself.
 
-`RESOLVER`, `NOT_FOUND_HANDLER` and `SSO_USER_SYNC` accept a dotted path, imported on each access, or the callable itself.
+The optional [`OidcStrategy`](../oidc/#settings) reads its settings from the `OIDC` sub-dict of `DB_TENANTS`.
 
 ## Other settings the library depends on
 

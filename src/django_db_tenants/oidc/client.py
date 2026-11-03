@@ -1,7 +1,7 @@
 """Per-tenant OpenID Connect clients built with Authlib.
 
-Provider details come from the Client row, so onboarding a tenant's identity
-provider is a data change, not a settings change.
+Provider details come from the client's :class:`OidcStrategy` (``Client.db_params["SSO"]``),
+so onboarding a tenant's identity provider is a data change, not a settings change.
 """
 
 import threading
@@ -10,6 +10,7 @@ from authlib.integrations.django_client import OAuth
 from django.core.cache import caches
 
 from ..conf import app_settings
+from .strategy import get_oidc_config
 
 _lock = threading.Lock()
 _oauth = None
@@ -28,11 +29,12 @@ def _oauth_registry() -> OAuth:
 
 def get_oidc_client(client):
     """Return an Authlib remote app configured for this tenant's IdP."""
-    if not client.sso_enabled:
-        raise ValueError(f"SSO is not enabled for tenant {client.slug!r}")
+    config = get_oidc_config(client)
+    if config is None:
+        raise ValueError(f"Tenant {client.slug!r} does not use an OidcStrategy")
 
     name = f"tenant_{client.slug}"
-    version = f"{client.config_version()}|{client.oidc_issuer}|{client.oidc_client_id}"
+    version = f"{client.config_version()}|{config.issuer}|{config.client_id}"
     oauth = _oauth_registry()
 
     if _versions.get(name) != version:
@@ -43,10 +45,10 @@ def get_oidc_client(client):
                 oauth.register(
                     name=name,
                     overwrite=True,
-                    client_id=client.oidc_client_id,
-                    client_secret=client.oidc_client_secret,
-                    server_metadata_url=f"{client.oidc_issuer.rstrip('/')}/.well-known/openid-configuration",
-                    client_kwargs={"scope": client.oidc_scopes},
+                    client_id=config.client_id,
+                    client_secret=config.client_secret,
+                    server_metadata_url=config.server_metadata_url,
+                    client_kwargs={"scope": config.scopes},
                 )
                 _versions[name] = version
     return oauth.create_client(name)

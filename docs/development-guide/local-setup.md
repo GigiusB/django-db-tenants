@@ -22,10 +22,10 @@ This installs the library in editable mode and the `dev` dependency group, which
 
 | Group | Contents | Used by |
 |---|---|---|
-| `test` | pytest, pytest-django, pytest-cov, factory-boy, freezegun | `pytest`, every tox test environment |
+| `test` | pytest, pytest-django, pytest-cov, factory-boy, freezegun, plus Authlib and requests (the `oidc` extra) | `pytest`, every tox test environment |
 | `lint` | ruff, ty, django-stubs, pre-commit | `tox -e lint`, `tox -e type`, the git hooks |
 | `db` | psycopg, mysqlclient | plain `pytest` runs with `TEST_DB=pg` or `TEST_DB=mysql` |
-| `docs` | mkdocs, mkdocs-material, mkdocs-awesome-pages-plugin, mkdocstrings | `mkdocs serve`, `tox -e docs` |
+| `docs` | mkdocs, mkdocs-material, mkdocs-awesome-pages-plugin, mkdocstrings, ruff (mkdocstrings formats the API signatures with it) | `mkdocs serve`, `tox -e docs` |
 | `dev` | all of the above plus tox and tox-uv | `uv sync` (default group) |
 
 Without the MySQL headers, skip the `db` group and work on SQLite and PostgreSQL through tox:

@@ -17,7 +17,7 @@ from django_db_tenants import (
 )
 ```
 
-Integration points referenced from settings by dotted path are public too: `TenantMiddleware`, `TenantRouter`, the resolvers, `tenant_key_func`, the SSO URLs, `with_tenant` and `for_each_tenant`, the provisioning functions, the database strategies and the exceptions.
+Integration points referenced from settings by dotted path are public too: `TenantMiddleware`, `TenantRouter`, the resolvers, `tenant_key_func`, `with_tenant` and `for_each_tenant`, the provisioning functions, the database strategies and the exceptions.
 
 ## Modules
 
@@ -34,7 +34,7 @@ Integration points referenced from settings by dotted path are public too: `Tena
 | [Provisioning](provisioning/) | `provisioning` | Create and migrate tenant databases |
 | [Background tasks](tasks/) | `tasks` | Run tasks and batch jobs per tenant |
 | [Cache isolation](cache/) | `cache` | Namespace cache keys per tenant |
-| [SSO](sso/) | `sso` | Per-tenant OpenID Connect login |
+| [OIDC strategy](oidc/) | `oidc` | Optional: per-tenant OpenID Connect single sign-on with `OidcStrategy` |
 | [Encryption](encryption/) | `fields`, `crypto` | Encrypt secrets at rest |
 | [Admin](admin/) | `admin` | Manage clients in the Django admin |
 | [Exceptions](exceptions/) | `exceptions` | Handle resolution errors |

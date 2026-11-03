@@ -2,7 +2,7 @@
 
 `django_db_tenants.models.Client`: one [tenant](../../../glossary/#tenant). Table `django_db_tenants_client`, in the [shared database](../../../glossary/#shared-database) only.
 
-A client row tells the library three things: whether the tenant may be served (`status`), how to reach its database (`db_strategy`, `db_name`, `db_params`), and how its users sign in (`sso_enabled`, `oidc_*`). Changing any of them takes effect without a restart.
+A client row tells the library three things: whether the tenant may be served (`status`), how to reach its database (`db_strategy`, `db_name`, `db_params`), and which host names it answers on (its [domains](../client-domain/)). Changing any of them takes effect without a restart.
 
 ## Relations
 
@@ -47,18 +47,7 @@ With the default `TemplateOverlay` strategy, `db_params` keys are `DATABASES` ke
 {"HOST": "db2.internal", "USER": "acme", "PASSWORD": "s3cret", "OPTIONS": {"sslmode": "require"}}
 ```
 
-Before migration `0002`, these values were the columns `db_engine`, `db_host`, `db_port`, `db_user`, `db_password` and `db_options`; migration `0002` copies them into `db_params` and `0003` drops the columns.
-
-### Single sign-on
-
-| Field | Type | Required | Default | Meaning |
-|---|---|---|---|---|
-| `sso_enabled` | `BooleanField` | yes | `False` | Turns on `/sso/` for this client's hosts |
-| `oidc_issuer` | `URLField` | no | `""` | Issuer URL; `/.well-known/openid-configuration` is appended for discovery. Required when `sso_enabled` |
-| `oidc_client_id` | `CharField(255)` | no | `""` | Client id registered at the IdP. Required when `sso_enabled` |
-| `oidc_client_secret` | `EncryptedTextField` | no | `""` | Client secret, Fernet-encrypted at rest |
-| `oidc_scopes` | `CharField(255)` | yes | `"openid email profile"` | Scopes requested at login |
-| `oidc_auto_create_users` | `BooleanField` | yes | `True` | The default user sync creates a local user on first SSO login |
+Other strategies define other keys: the optional [`OidcStrategy`](../../api/oidc/) adds an `SSO` object with the tenant's OpenID Connect provider.
 
 ### Timestamps
 
@@ -74,8 +63,8 @@ Before migration `0002`, these values were the columns `db_engine`, `db_host`, `
 | `alias` | `str` | The database alias: the slug |
 | `is_active` | `bool` | `status == "active"` |
 | `get_db_strategy()` | `DatabaseStrategy` | `db_strategy`, or `ImproperlyConfigured` when the stored class cannot be imported |
-| `config_version()` | `str` | `updated_at` in ISO format; a new value makes each process re-register the connection and the OIDC client |
-| `clean()` | | Rejects reserved slugs, `sso_enabled` without `oidc_issuer` and `oidc_client_id`, and `db_params` the strategy refuses (`validate()`) |
+| `config_version()` | `str` | `updated_at` in ISO format; a new value makes each process re-register the connection (and `OidcStrategy`'s OIDC client) |
+| `clean()` | | Rejects reserved slugs and `db_params` the strategy refuses (`validate()`) |
 
 Default ordering: `name`. `str(client)` is `"<name> (<slug>)"`.
 

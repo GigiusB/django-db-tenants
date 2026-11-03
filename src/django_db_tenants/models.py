@@ -4,7 +4,7 @@ from strategy_field.fields import StrategyField
 
 from . import strategies
 from .conf import app_settings
-from .fields import EncryptedJSONField, EncryptedTextField
+from .fields import EncryptedJSONField
 
 RESERVED_ALIASES = {"default"}
 
@@ -40,14 +40,6 @@ class Client(models.Model):
         '"OPTIONS": {"sslmode": "require"}}.',
     )
 
-    # --- Single sign-on (OpenID Connect) ----------------------------------------
-    sso_enabled = models.BooleanField(default=False)
-    oidc_issuer = models.URLField(blank=True, help_text="Issuer URL; /.well-known/openid-configuration is appended.")
-    oidc_client_id = models.CharField(max_length=255, blank=True)
-    oidc_client_secret = EncryptedTextField(blank=True)
-    oidc_scopes = models.CharField(max_length=255, default="openid email profile")
-    oidc_auto_create_users = models.BooleanField(default=True, help_text="Create a local user on first SSO login.")
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -69,8 +61,6 @@ class Client(models.Model):
     def clean(self):
         if self.slug in RESERVED_ALIASES or self.slug == app_settings.TEMPLATE_ALIAS:
             raise ValidationError({"slug": f"'{self.slug}' is a reserved database alias."})
-        if self.sso_enabled and not (self.oidc_issuer and self.oidc_client_id):
-            raise ValidationError("SSO requires an OIDC issuer and client id.")
         if self.db_strategy is not None:  # an unknown strategy is reported by the field itself
             self.db_strategy.validate()
 

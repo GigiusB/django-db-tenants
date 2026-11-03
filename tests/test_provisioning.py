@@ -65,14 +65,11 @@ def test_provision_tenant_command(tenant_db_name: Callable[[str], str]):
         name="Via Command",
         domain=["CMD.test", "alt.test"],
         db_name=tenant_db_name("cmd"),
-        oidc_issuer="https://idp.example.com",
-        oidc_client_id="abc",
         stdout=None,
         verbosity=0,
     )
     client = Client.objects.get(slug="cmd")
     assert client.is_active
-    assert client.sso_enabled
     assert list(ClientDomain.objects.filter(client=client).values_list("domain", "is_primary")) == [
         ("cmd.test", True),
         ("alt.test", False),

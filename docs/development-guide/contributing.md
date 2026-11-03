@@ -21,7 +21,7 @@ Who is this for: anyone sending a change to django-db-tenants.
 | Imports | isort order with `django_db_tenants`, `testutils`, `demo`, `notes` as first-party | ruff `I` |
 | Types | The package ships `py.typed`; new public functions get type hints | `ty check` |
 | Logging | Use the module logger (`logging.getLogger(__name__)`), never `print` | ruff `T20` |
-| Settings | Every option goes through `DB_TENANTS` and `conf.app_settings`; no new top-level Django settings | review |
+| Settings | Every option goes through `DB_TENANTS` and `conf.app_settings`; an optional module uses its own sub-dict (`DB_TENANTS["OIDC"]`, read by `oidc.conf.oidc_settings`); no new top-level Django settings | review |
 | Security | Secrets in models use `EncryptedTextField` or `EncryptedJSONField`; redirects are checked with `url_has_allowed_host_and_scheme` | ruff `S`, review |
 
 Silence a lint rule only on the line that needs it, with the rule code and a reason: `# noqa: BLE001 - report per tenant and continue`.
@@ -44,7 +44,7 @@ Remember that library models live in the shared database only; they must not be 
 
 ### Add a setting
 
-1. Add the key and its default, with a comment, to `DEFAULTS` in `conf.py`. If the value is a dotted path to a callable, add the key to `_IMPORT_STRINGS`.
+1. Add the key and its default, with a comment, to `DEFAULTS` in `conf.py`. If the value is a dotted path to a callable, add the key to the `import_strings` given to `AppSettings` (`app_settings = AppSettings(DEFAULTS, frozenset({...}))`).
 2. Read it with `app_settings.<KEY>` at the point of use (not at import time), so `override_settings` works in tests.
 3. Test both the default and an override.
 4. Add a row to the [Settings](../api/settings/) reference.
@@ -77,7 +77,7 @@ Registering a strategy needs no migration.
 1. Add a branch for the vendor to `TemplateOverlay.create_database()` and `drop_database()` in `strategies.py`.
 2. Teach `tests/_extra/testutils/tenants.py` to create, clone and drop databases on it, and `testutils/databases.py` to configure it from `TEST_<BACKEND>_*` variables.
 3. Add a service to `docker-compose.yml`, variables to `.env.example`, a factor to `tox.ini`, a `test-<backend>` job with a service container to `.github/workflows/ci.yml`, and an extra to `pyproject.toml`.
-4. Update [Database strategies](../api/strategies/#the-built-in-strategy-templateoverlay) and [Local environment setup](../local-setup/).
+4. Update [Database strategies](../api/strategies/#templateoverlay) and [Local environment setup](../local-setup/).
 
 ### Add to the public API
 

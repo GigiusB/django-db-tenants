@@ -32,8 +32,8 @@ from django.db.backends.utils import CursorWrapper
 from django_db_tenants import crypto, db, tenant_context
 from django_db_tenants.conf import app_settings
 from django_db_tenants.models import Client
+from django_db_tenants.oidc import client as oidc
 from django_db_tenants.provisioning import migrate_tenant
-from django_db_tenants.sso import oidc
 
 TEMPLATE_ALIAS = "test_template"
 SERVER_DB_PREFIX = "test_tenant_"

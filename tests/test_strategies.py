@@ -3,7 +3,6 @@ import pickle
 import pytest
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db import connection, connections
-from django.db.migrations.executor import MigrationExecutor
 
 from django_db_tenants.admin import ClientForm
 from django_db_tenants.db import ensure_db_registered
@@ -94,7 +93,6 @@ def test_admin_form_edits_strategy_and_params():
         "db_strategy": "testutils.strategies.EnvironmentPassword",
         "db_name": "form_db",
         "db_params": '{"PASSWORD_ENV": "X"}',
-        "oidc_scopes": "openid",
     }
     form = ClientForm(data=data)
     assert form.is_valid(), form.errors
@@ -106,30 +104,3 @@ def test_admin_form_edits_strategy_and_params():
     form = ClientForm(data={**data, "slug": "form2", "db_params": '{"PASSWORD": "x"}'})
     assert not form.is_valid()
     assert "db_params" in form.errors
-
-
-@pytest.mark.django_db(transaction=True)
-def test_migration_moves_connection_columns_into_db_params():
-    before, after = [("django_db_tenants", "0001_initial")], [("django_db_tenants", "0003_remove_client_db_columns")]
-    executor = MigrationExecutor(connection)
-    executor.migrate(before)
-    OldClient = executor.loader.project_state(before).apps.get_model("django_db_tenants", "Client")
-    OldClient.objects.create(
-        name="Old", slug="old", db_name="old_db", db_host="h", db_port="", db_password="pw", db_options={"a": 1}
-    )
-    OldClient.objects.create(name="Plain", slug="plain", db_name="plain_db")
-
-    executor = MigrationExecutor(connection)
-    executor.migrate(after)
-
-    assert Client.objects.get(slug="old").db_params == {"HOST": "h", "PASSWORD": "pw", "OPTIONS": {"a": 1}}
-    assert Client.objects.get(slug="plain").db_params == {}
-    assert isinstance(Client.objects.get(slug="old").db_strategy, TemplateOverlay)
-
-    executor = MigrationExecutor(connection)
-    executor.migrate(before)  # and back
-    OldClient = executor.loader.project_state(before).apps.get_model("django_db_tenants", "Client")
-    old = OldClient.objects.get(slug="old")
-    assert (old.db_host, old.db_port, old.db_password, old.db_options) == ("h", "", "pw", {"a": 1})
-
-    MigrationExecutor(connection).migrate(after)

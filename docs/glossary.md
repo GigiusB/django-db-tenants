@@ -4,7 +4,7 @@ Terms used across the developer's guide, in alphabetical order.
 
 ## Client
 
-The row in the [shared database](#shared-database) that describes one [tenant](#tenant): name, slug, status, [database strategy](#database-strategy) and its parameters, and SSO settings. Model: `django_db_tenants.models.Client`. See the [Client model reference](../development-guide/models/client/).
+The row in the [shared database](#shared-database) that describes one [tenant](#tenant): name, slug, status, [database strategy](#database-strategy) and its parameters. Model: `django_db_tenants.models.Client`. See the [Client model reference](../development-guide/models/client/).
 
 ## Config version
 
@@ -24,7 +24,7 @@ A URL path prefix listed in `DB_TENANTS["EXEMPT_PATHS"]` (default `/healthz`). T
 
 ## Fernet
 
-The symmetric encryption scheme from the `cryptography` package. The library uses it to encrypt database passwords and OIDC client secrets at rest. See [Encryption](../development-guide/api/encryption/).
+The symmetric encryption scheme from the `cryptography` package. The library uses it to encrypt `Client.db_params` (database passwords and other strategy secrets) at rest. See [Encryption](../development-guide/api/encryption/).
 
 ## IdP
 
@@ -32,7 +32,7 @@ Identity provider: the OpenID Connect server that authenticates a tenant's users
 
 ## OIDC
 
-OpenID Connect, the authentication layer on top of OAuth 2.0 that the library uses for per-tenant single sign-on. See [SSO](../development-guide/api/sso/).
+OpenID Connect, the authentication layer on top of OAuth 2.0 that the optional `OidcStrategy` uses for per-tenant single sign-on. See [OIDC strategy](../development-guide/api/oidc/).
 
 ## Provisioning
 

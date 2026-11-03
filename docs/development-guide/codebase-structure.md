@@ -34,9 +34,9 @@ docs/                         this site (mkdocs)
 | `cache.py` | `tenant_key_func`: per-tenant cache key namespaces | [Cache isolation](../api/cache/) |
 | `exceptions.py` | `TenantError`, `TenantNotFound`, `TenantInactive` | [Exceptions](../api/exceptions/) |
 | `admin.py` | `ClientAdmin` with the domain inline and the provisioning action | [Admin](../api/admin/) |
-| `sso/` | Per-tenant OpenID Connect: Authlib clients (`oidc.py`), claims-to-user mapping (`sync.py`), views and URLs | [SSO](../api/sso/) |
+| `oidc/` | Optional, used by nothing else in the package: `OidcStrategy` and `OidcConfig` (`strategy.py`), its settings (`conf.py`), Authlib clients (`client.py`), claims-to-user mapping (`sync.py`), views and URLs | [OIDC strategy](../api/oidc/) |
 | `management/commands/` | `provision_tenant`, `migrate_tenants`, `tenant_shell` | [CLI reference](../cli/) |
-| `migrations/` | Schema of `Client` and `ClientDomain` (shared database only). `0002`/`0003` moved the connection columns into `db_params` | |
+| `migrations/` | Schema of `Client` and `ClientDomain` (shared database only) | |
 | `py.typed` | Marks the package as typed (PEP 561) | |
 
 ### How the modules depend on each other
@@ -59,20 +59,22 @@ flowchart LR
     signals --> db
     models --> fields --> crypto
     registry --> cache
+    oidc -. optional .-> strategies
 ```
 
-Every module reads its settings through `conf.app_settings`. `context.py` imports `db` and `registry` inside `tenant_context()` because `registry` imports the models, which must not load before the app registry is ready.
+Every module reads its settings through `conf.app_settings` (`oidc` through `oidc.conf.oidc_settings`, which reads `DB_TENANTS["OIDC"]`). No module imports `oidc`, so Authlib is only needed by projects that use `OidcStrategy`. `context.py` imports `db` and `registry` inside `tenant_context()` because `registry` imports the models, which must not load before the app registry is ready.
 
 ## Test utilities: `tests/_extra/testutils`
 
 | Module | Contents |
 |---|---|
-| `settings.py` | Test settings: the demo's settings plus the selected database backend, a fast password hasher, a tenant-namespaced `LocMemCache`, a fixed `ENCRYPTION_KEY`, `CONTROL_HOSTS = ["control.test"]` |
+| `settings.py` | Test settings: the demo's settings plus the selected database backend, a fast password hasher, a tenant-namespaced `LocMemCache`, a fixed `ENCRYPTION_KEY`, `CONTROL_HOSTS = ["control.test"]`, the `EnvironmentPassword` and `OidcStrategy` strategies |
+| `urls.py` | The demo's URLs plus the OIDC views under `oidc/` |
 | `databases.py` | `TEST_DB` backend selection and `.env` loading |
 | `plugin.py` | pytest fixtures: `tenant_factory`, `acme`, `globex`, `tenant_db_name`, `tenant_template_db`, plus two autouse fixtures |
 | `tenants.py` | Creating, cloning and dropping tenant databases per backend; `reset_tenant_state()`, `tenant_login()` |
 | `factories.py` | factory_boy factories: `ClientFactory`, `ClientDomainFactory`, `UserFactory`, `NoteFactory` |
-| `sso.py` | `FakeOIDCClient`, a stand-in for the Authlib client in SSO view tests |
+| `oidc.py` | `FakeOIDCClient`, a stand-in for the Authlib client in OIDC view tests |
 | `strategies.py` | `EnvironmentPassword`, a custom database strategy registered by the test settings, and `Unregistered`, one that is not |
 
 See [Testing strategy](../testing/) for how they fit together.
@@ -82,7 +84,7 @@ See [Testing strategy](../testing/) for how they fit together.
 | Path | What it shows |
 |---|---|
 | `demo/settings.py` | Every setting the library needs, marked `# django-db-tenants` |
-| `demo/urls.py` | Mounting the SSO views under `sso/` |
+| `demo/urls.py` | Django's own login views (`django.contrib.auth.urls`): tenant users log in with a password stored in their tenant database |
 | `demo/views.py` | `request.tenant`, `get_current_tenant()`, a health check on an [exempt path](../../glossary/#exempt-path) |
 | `notes/` | An ordinary app whose tables live in every tenant database |
 | `notes/tasks.py` | Background jobs with `@with_tenant` and `for_each_tenant` |

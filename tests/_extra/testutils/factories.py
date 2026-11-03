@@ -12,6 +12,8 @@ Factories are generic (``DjangoModelFactory[Client]``), so prefer the explicit
 calling the factory class directly is not.
 """
 
+from typing import Any
+
 import factory
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
@@ -21,6 +23,19 @@ from django_db_tenants.models import Client, ClientDomain
 from notes.models import Note
 
 DEFAULT_PASSWORD = "pw"
+OIDC_STRATEGY = "django_db_tenants.oidc.OidcStrategy"
+
+
+def sso_params(slug: str, **sso: Any) -> dict[str, Any]:
+    """``db_params`` for ``OidcStrategy`` with a provider for client ``slug``; ``sso`` overrides its keys."""
+    return {
+        "SSO": {
+            "ISSUER": f"https://idp.example.com/{slug}",
+            "CLIENT_ID": f"{slug}-client",
+            "CLIENT_SECRET": "oidc-secret",
+            **sso,
+        }
+    }
 
 
 class ClientFactory(DjangoModelFactory[Client]):
@@ -42,12 +57,7 @@ class ClientFactory(DjangoModelFactory[Client]):
     class Params:
         provisioning = factory.Trait(status=Client.Status.PROVISIONING)
         suspended = factory.Trait(status=Client.Status.SUSPENDED)
-        sso = factory.Trait(
-            sso_enabled=True,
-            oidc_issuer=factory.LazyAttribute(lambda o: f"https://idp.example.com/{o.slug}"),
-            oidc_client_id=factory.LazyAttribute(lambda o: f"{o.slug}-client"),
-            oidc_client_secret="oidc-secret",
-        )
+        sso = factory.Trait(db_strategy=OIDC_STRATEGY, db_params=factory.LazyAttribute(lambda o: sso_params(o.slug)))
 
 
 class ClientDomainFactory(DjangoModelFactory[ClientDomain]):

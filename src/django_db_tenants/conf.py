@@ -39,30 +39,34 @@ DEFAULTS = {
     # Cache used for host -> client lookups.
     "CACHE_ALIAS": "default",
     "CACHE_TTL": 60,
-    # Fernet key (urlsafe base64, 32 bytes) for DB passwords / OIDC secrets.
+    # Fernet key (urlsafe base64, 32 bytes) for Client.db_params (DB passwords, ...).
     # If None a key is derived from SECRET_KEY (rotating SECRET_KEY then breaks
     # decryption, so set this explicitly in production).
     "ENCRYPTION_KEY": None,
-    # SSO
-    "SSO_USER_SYNC": "django_db_tenants.sso.sync.default_user_sync",
-    "SSO_AUTH_BACKEND": "django.contrib.auth.backends.ModelBackend",
-    "SSO_LOGIN_REDIRECT_URL": "/",
-    "SSO_LOGOUT_REDIRECT_URL": "/",
-    "SSO_RP_INITIATED_LOGOUT": True,
 }
-
-_IMPORT_STRINGS = {"RESOLVER", "NOT_FOUND_HANDLER", "SSO_USER_SYNC"}
 
 
 class AppSettings:
+    """The keys of ``DB_TENANTS`` (or of its ``section`` sub-dict), falling back to ``defaults``.
+
+    Values of ``import_strings`` keys given as dotted paths are imported.
+    """
+
+    def __init__(self, defaults: dict, import_strings: frozenset[str] = frozenset(), section: str = "") -> None:
+        self._defaults = defaults
+        self._import_strings = import_strings
+        self._section = section
+
     def __getattr__(self, name):
-        if name not in DEFAULTS:
+        if name.startswith("_") or name not in self._defaults:
             raise AttributeError(name)
         user_settings = getattr(settings, "DB_TENANTS", {}) or {}
-        value = user_settings.get(name, DEFAULTS[name])
-        if name in _IMPORT_STRINGS and isinstance(value, str):
+        if self._section:
+            user_settings = user_settings.get(self._section) or {}
+        value = user_settings.get(name, self._defaults[name])
+        if name in self._import_strings and isinstance(value, str):
             value = import_string(value)
         return value
 
 
-app_settings = AppSettings()
+app_settings = AppSettings(DEFAULTS, frozenset({"RESOLVER", "NOT_FOUND_HANDLER"}))

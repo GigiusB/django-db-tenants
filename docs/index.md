@@ -1,6 +1,6 @@
 # django-db-tenants
 
-Database-per-client multi-tenancy for Django, with tenant databases registered at runtime and per-tenant OpenID Connect single sign-on.
+Database-per-client multi-tenancy for Django, with tenant databases registered at runtime and optional per-tenant OpenID Connect single sign-on.
 
 This site is the **developer's guide**. It is for:
 

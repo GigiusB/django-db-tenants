@@ -14,12 +14,6 @@ def test_reserved_slug_is_invalid(slug):
         ClientFactory.build(slug=slug).full_clean()
 
 
-def test_sso_requires_issuer_and_client_id():
-    with pytest.raises(ValidationError, match="SSO requires"):
-        ClientFactory.build(sso_enabled=True).full_clean()
-    ClientFactory.build(sso=True).full_clean()
-
-
 def test_db_params_are_validated_by_the_strategy():
     with pytest.raises(ValidationError, match="does not accept NAME"):
         ClientFactory.build(db_params={"NAME": "other"}).full_clean()
@@ -35,26 +29,23 @@ def test_config_version_tracks_updated_at():
 
 
 def test_secrets_are_encrypted_at_rest():
-    client = ClientFactory.create(db_params={"PASSWORD": "s3cret"}, oidc_client_secret="shh")
+    params = {"USER": "shh", "PASSWORD": "s3cret"}
+    client = ClientFactory.create(db_params=params)
     client.refresh_from_db()
-    assert (client.db_params, client.oidc_client_secret) == ({"PASSWORD": "s3cret"}, "shh")
+    assert client.db_params == params
 
     with connection.cursor() as cur:
-        cur.execute("SELECT db_params, oidc_client_secret FROM django_db_tenants_client WHERE id = %s", [client.pk])
-        raw = cur.fetchone()
-    assert "s3cret" not in raw[0]
-    assert "shh" not in raw[1]
+        cur.execute("SELECT db_params FROM django_db_tenants_client WHERE id = %s", [client.pk])
+        (raw,) = cur.fetchone()
+    assert "s3cret" not in raw
+    assert "shh" not in raw
 
 
 def test_legacy_plaintext_is_returned_as_is():
     client = ClientFactory.create()
     with connection.cursor() as cur:
-        cur.execute(
-            "UPDATE django_db_tenants_client SET oidc_client_secret = 'plain', db_params = %s WHERE id = %s",
-            ['{"HOST": "h"}', client.pk],
-        )
+        cur.execute("UPDATE django_db_tenants_client SET db_params = %s WHERE id = %s", ['{"HOST": "h"}', client.pk])
     client.refresh_from_db()
-    assert client.oidc_client_secret == "plain"
     assert client.db_params == {"HOST": "h"}
 
 

@@ -136,35 +136,13 @@ See [Background tasks](../api/tasks/) and [Context](../api/context/).
 
 The [`provision_tenant`](../cli/provision-tenant/) command and the admin action **Provision database** both call `provision()`. The reverse, `drop_database(client)`, closes the current thread's connection to the tenant and asks the strategy to drop the database; the client row is left alone.
 
-## Single sign-on
+## Authentication
 
-With `Client.sso_enabled`, the views in `sso/views.py` sign users in through the client's own OpenID Connect provider:
-
-```mermaid
-sequenceDiagram
-    participant B as Browser
-    participant S as Django (tenant host)
-    participant I as Tenant's IdP
-    B->>S: GET /sso/login/?next=/notes/
-    S->>S: get_oidc_client(request.tenant), store safe "next" in session
-    S-->>B: redirect to IdP authorize endpoint
-    B->>I: authenticate
-    I-->>B: redirect to /sso/callback/?code=...&state=...
-    B->>S: GET /sso/callback/
-    S->>I: exchange code (Authlib checks state, nonce, ID token signature)
-    S->>S: SSO_USER_SYNC(client, userinfo, request) -> user in tenant DB
-    S-->>B: auth.login, redirect to "next" or SSO_LOGIN_REDIRECT_URL
-```
-
-- `sso/oidc.py` keeps one Authlib OAuth registry per process and registers one remote app per tenant (`tenant_<slug>`) from the `Client` row. The provider metadata comes from `<oidc_issuer>/.well-known/openid-configuration` and is cached in `CACHE_ALIAS`. The app is registered again when the client's config version, issuer or client id changes.
-- The user is found or created **in the tenant database**, because the tenant is active during the callback.
-- `/sso/logout/` logs out locally, then performs [RP-initiated logout](../../glossary/#rp-initiated-logout) when it is enabled, an ID token is in the session and the provider advertises `end_session_endpoint`.
-
-Each IdP must list `https://<client-domain>/sso/callback/` as a redirect URI. Details: [SSO API](../api/sso/).
+The library does not authenticate users. Tenant users are ordinary Django users stored in the tenant database (auth and sessions are tenant apps), so any Django authentication works per tenant: the demo project uses `django.contrib.auth`'s login views with passwords. For per-tenant OpenID Connect single sign-on, clients can use the optional [`OidcStrategy`](../api/oidc/), which ships its own views.
 
 ## Secrets at rest
 
-`Client.db_params` (an `EncryptedJSONField`, holding the database password among the strategy parameters) and `Client.oidc_client_secret` (an `EncryptedTextField`) are Fernet-encrypted when written and decrypted when read. The key is `ENCRYPTION_KEY`, or one derived from `SECRET_KEY` when it is unset. See [Encryption](../api/encryption/).
+`Client.db_params` (an `EncryptedJSONField`, holding the database password among the strategy parameters) is Fernet-encrypted when written and decrypted when read. The key is `ENCRYPTION_KEY`, or one derived from `SECRET_KEY` when it is unset. See [Encryption](../api/encryption/).
 
 ## Cache isolation
 
@@ -173,10 +151,10 @@ Tenants share the cache servers. `cache.tenant_key_func`, set as a cache's `KEY_
 ## Known constraints
 
 - **One connection per tenant per worker.** A worker keeps a connection for each tenant it served, subject to `CONN_MAX_AGE`. For many tenants, keep `CONN_MAX_AGE` low or use a pooler such as PgBouncer.
-- **The slug is permanent.** It is the database alias, a cache namespace and part of the OIDC app name; the admin makes it read-only after creation. `default` and the template alias are reserved (`Client.clean()`).
+- **The slug is permanent.** It is the database alias, a cache namespace and part of the OIDC client name of `OidcStrategy`; the admin makes it read-only after creation. `default` and the template alias are reserved (`Client.clean()`).
 - **Streaming responses.** The context is reset when the view returns. The body of a `StreamingHttpResponse` is produced after that, so queries made while streaming run without the tenant (on the shared database) unless the generator activates it with `tenant_context()`.
 - **No cross-database relations.** See [Database routing](#database-routing).
-- **Secrets in the cache.** The registry caches whole `Client` objects, pickled, in `CACHE_ALIAS`: the cached copy holds `db_params` (database passwords included) and the OIDC client secret **decrypted**. Use a cache that only the application can reach, with authentication and TLS where the network is shared.
+- **Secrets in the cache.** The registry caches whole `Client` objects, pickled, in `CACHE_ALIAS`: the cached copy holds `db_params` **decrypted**, with the database passwords and any other secret the strategy keeps there (such as the client secret of `OidcStrategy`). Use a cache that only the application can reach, with authentication and TLS where the network is shared.
 
 ## Next steps
 

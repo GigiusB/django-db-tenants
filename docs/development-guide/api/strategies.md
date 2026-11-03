@@ -21,9 +21,16 @@ client.get_db_strategy()  # same, but raises ImproperlyConfigured if the class c
 
 `ensure_db_registered()` always resets `TEST["NAME"]` to `None` on what the strategy returns, so no strategy can make a test run reuse the template's test database.
 
-## The built-in strategy: `TemplateOverlay`
+## Shipped strategies
 
-The default for every client: the [template alias](../../../glossary/#template-alias) connection with the client's parameters laid over it.
+| Strategy | Registered | What it does |
+|---|---|---|
+| `django_db_tenants.strategies.TemplateOverlay` | always, the default | `DATABASES` keys from `db_params` laid over the template connection; `NAME = client.db_name` |
+| `django_db_tenants.oidc.OidcStrategy` | through `DATABASE_STRATEGIES` | `TemplateOverlay`, plus the client's OpenID Connect provider for per-tenant single sign-on. See [OIDC strategy](../oidc/) |
+
+## `TemplateOverlay`
+
+The default for every client: the [template alias](../../../glossary/#template-alias) connection with the client's parameters laid over it. Its `db_params` are shaped like a Django `DATABASES` entry without `NAME`, which comes from `client.db_name`.
 
 | `db_params` key | Effect |
 |---|---|
@@ -35,7 +42,7 @@ The default for every client: the [template alias](../../../glossary/#template-a
 Missing keys, empty strings and `null` inherit the template's value. `NAME` is always `client.db_name`. Any other key fails validation:
 
 ```text
-{'db_params': ['Template connection + overrides does not accept NAME. Allowed keys: CONN_HEALTH_CHECKS, ...']}
+{'db_params': ['Template connection + overrides does not accept NAME. Allowed keys: CONN_HEALTH_CHECKS, ..., PORT, USER.']}
 ```
 
 Examples of `db_params`:

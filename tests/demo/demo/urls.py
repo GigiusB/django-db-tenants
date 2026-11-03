@@ -9,6 +9,5 @@ urlpatterns = [
     path("healthz", views.healthz, name="healthz"),
     path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
-    path("sso/", include("django_db_tenants.sso.urls")),  # per-tenant OIDC login
     path("notes/", include("notes.urls")),
 ]

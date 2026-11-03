@@ -15,7 +15,7 @@ TL;DR: tests use real tenant databases, not mocks. Each tenant in a test gets a 
 | `uv run tox -p auto` | the whole matrix plus `lint`, `type` and `docs`, in parallel |
 | `uv run tox -e py313-dj52-pg` | one environment: `<python>-<django>-<sqlite|pg|mysql>` |
 
-tox environments run `pytest --cov --cov-report=term` by default; pass other pytest arguments after `--`: `uv run tox -e py313-dj52-sqlite -- -k sso`.
+tox environments run `pytest --cov --cov-report=term` by default; pass other pytest arguments after `--`: `uv run tox -e py313-dj52-sqlite -- -k oidc`.
 
 ## The matrix
 
@@ -51,10 +51,10 @@ Each server environment creates `test_<NAME>_<tox env>` so parallel runs against
 | `test_middleware.py` | host and header resolution, ports, control hosts, exempt paths, 404s and the custom not-found handler |
 | `test_cache.py` | `tenant_key_func` key formats, isolation between tenants, cache sessions, shared registry keys |
 | `test_models.py` | `Client` validation (including `db_params`), `config_version()`, encryption at rest, legacy plain-text and undecryptable values |
-| `test_strategies.py` | the strategy field and registry, `TemplateOverlay` settings, custom strategies, missing strategy classes, the admin form, the `0002`/`0003` data migration forwards and backwards |
+| `test_strategies.py` | the strategy field and registry, `TemplateOverlay` settings, custom strategies, missing strategy classes, the admin form |
 | `test_provisioning.py` | `provision()`, `drop_database()`, unsupported vendors, the `provision_tenant` (strategy and params options, bad input) and `migrate_tenants` commands |
 | `test_tasks.py` | `with_tenant`, `for_each_tenant` |
-| `test_sso.py` | SSO views, safe redirects, IdP errors, user sync refusal, RP-initiated logout, OIDC client registration |
+| `test_oidc.py` | `OidcStrategy` validation, configuration and connection, `provision_tenant` with it, the views (only for `OidcStrategy` clients), safe redirects, IdP errors, user sync refusal, RP-initiated logout, OIDC client registration |
 | `test_demo.py` | end-to-end checks of the demo project: pages, logins, notes, tasks, `notes_report`, `seed_demo` |
 | `test_migrations.py` | no missing migrations |
 
@@ -112,9 +112,9 @@ Guidelines:
 - **Create tenant-app objects inside `tenant_context()`.** Factories for users and notes write wherever the router points. `ClientFactory` and `ClientDomainFactory` always write to the shared database.
 - **Choose the tenant with the host.** Pass `HTTP_HOST="<slug>.test"` to the test client; `control.test` is the control host.
 - **Log in on a tenant** with `testutils.tenants.tenant_login(client, acme, user)`: the session must be stored in the tenant database.
-- **Use the factories' explicit methods** (`.create()`, `.build()`, `.create_batch()`): they are typed. `ClientFactory` has the traits `provisioning`, `suspended` and `sso`, for example `ClientFactory.create(suspended=True)`.
+- **Use the factories' explicit methods** (`.create()`, `.build()`, `.create_batch()`): they are typed. `ClientFactory` has the traits `provisioning`, `suspended` and `sso` (an `OidcStrategy` client with a provider; `sso_params()` builds its `db_params`), for example `ClientFactory.create(suspended=True)`.
 - **Freeze time** with `freezegun` for anything time-based: cache TTLs, `updated_at`-driven re-registration.
-- **SSO without an IdP:** replace `get_oidc_client` with `testutils.sso.FakeOIDCClient`, which returns the claims you give it.
+- **OIDC without an IdP:** replace `get_oidc_client` with `testutils.oidc.FakeOIDCClient`, which returns the claims you give it.
 - Tests that need SQLite files (the demo's seeding) are skipped on other backends with `skipif(selected_backend() != "sqlite")`.
 
 ## Coverage

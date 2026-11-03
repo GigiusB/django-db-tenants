@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.12'",
@@ -562,9 +562,9 @@ resolution-markers = [
     "python_full_version < '3.12'",
 ]
 dependencies = [
-    { name = "asgiref", marker = "python_full_version < '3.12'" },
-    { name = "sqlparse", marker = "python_full_version < '3.12'" },
-    { name = "tzdata", marker = "python_full_version < '3.12' and sys_platform == 'win32'" },
+    { name = "asgiref" },
+    { name = "sqlparse" },
+    { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/85/fe/79e692b430c7721bf4b812c328bfe687e73e3f28f56611a6a18a97e887cc/django-5.2.18.tar.gz", hash = "sha256:461c5dd06d2ea16bd5ca37d3f46e4def1d6b0fe7588c6f4e2119517bb0af8b2d", size = 10910238, upload-time = "2026-10-06T13:01:09.371Z" }
 wheels = [
@@ -579,9 +579,9 @@ resolution-markers = [
     "python_full_version >= '3.12'",
 ]
 dependencies = [
-    { name = "asgiref", marker = "python_full_version >= '3.12'" },
-    { name = "sqlparse", marker = "python_full_version >= '3.12'" },
-    { name = "tzdata", marker = "python_full_version >= '3.12' and sys_platform == 'win32'" },
+    { name = "asgiref" },
+    { name = "sqlparse" },
+    { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/89/24/20d187a22ac821288b53c53b8f696019dcb0c7b4f973f052ade19392c74d/django-6.1.2.tar.gz", hash = "sha256:a1e92451ccb8b514e91bbb3b6d186d20b4030558f116b5d9de6535455ff210b7", size = 11251425, upload-time = "2026-10-06T12:53:29.622Z" }
 wheels = [
@@ -593,17 +593,19 @@ name = "django-db-tenants"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "authlib" },
     { name = "cryptography" },
     { name = "django", version = "5.2.18", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django", version = "6.1.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "django-strategy-field" },
-    { name = "requests" },
 ]
 
 [package.optional-dependencies]
 mysql = [
     { name = "mysqlclient" },
+]
+oidc = [
+    { name = "authlib" },
+    { name = "requests" },
 ]
 postgres = [
     { name = "psycopg", extra = ["binary"] },
@@ -615,6 +617,7 @@ db = [
     { name = "psycopg", extra = ["binary"] },
 ]
 dev = [
+    { name = "authlib" },
     { name = "django-stubs" },
     { name = "factory-boy" },
     { name = "freezegun" },
@@ -628,6 +631,7 @@ dev = [
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
+    { name = "requests" },
     { name = "ruff" },
     { name = "tox" },
     { name = "tox-uv" },
@@ -638,6 +642,7 @@ docs = [
     { name = "mkdocs-awesome-pages-plugin" },
     { name = "mkdocs-material" },
     { name = "mkdocstrings", extra = ["python"] },
+    { name = "ruff" },
 ]
 lint = [
     { name = "django-stubs" },
@@ -646,24 +651,26 @@ lint = [
     { name = "ty" },
 ]
 test = [
+    { name = "authlib" },
     { name = "factory-boy" },
     { name = "freezegun" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
+    { name = "requests" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "authlib", specifier = ">=1.3" },
+    { name = "authlib", marker = "extra == 'oidc'", specifier = ">=1.3" },
     { name = "cryptography", specifier = ">=41" },
     { name = "django", specifier = ">=4.2" },
     { name = "django-strategy-field", specifier = ">=3.2" },
     { name = "mysqlclient", marker = "extra == 'mysql'", specifier = ">=2.2" },
     { name = "psycopg", extras = ["binary"], marker = "extra == 'postgres'", specifier = ">=3.1" },
-    { name = "requests", specifier = ">=2.28" },
+    { name = "requests", marker = "extra == 'oidc'", specifier = ">=2.28" },
 ]
-provides-extras = ["postgres", "mysql"]
+provides-extras = ["oidc", "postgres", "mysql"]
 
 [package.metadata.requires-dev]
 db = [
@@ -671,6 +678,7 @@ db = [
     { name = "psycopg", extras = ["binary"], specifier = ">=3.1" },
 ]
 dev = [
+    { name = "authlib", specifier = ">=1.3" },
     { name = "django-stubs", specifier = ">=5.2" },
     { name = "factory-boy", specifier = ">=3.3" },
     { name = "freezegun", specifier = ">=1.5" },
@@ -684,6 +692,7 @@ dev = [
     { name = "pytest", specifier = ">=9" },
     { name = "pytest-cov", specifier = ">=6" },
     { name = "pytest-django", specifier = ">=4.11" },
+    { name = "requests", specifier = ">=2.28" },
     { name = "ruff", specifier = ">=0.15" },
     { name = "tox", specifier = ">=4.30" },
     { name = "tox-uv", specifier = ">=1.28" },
@@ -694,6 +703,7 @@ docs = [
     { name = "mkdocs-awesome-pages-plugin", specifier = ">=2.10" },
     { name = "mkdocs-material", specifier = ">=9.6" },
     { name = "mkdocstrings", extras = ["python"], specifier = ">=0.29" },
+    { name = "ruff", specifier = ">=0.15" },
 ]
 lint = [
     { name = "django-stubs", specifier = ">=5.2" },
@@ -702,11 +712,13 @@ lint = [
     { name = "ty", specifier = ">=0.0.90" },
 ]
 test = [
+    { name = "authlib", specifier = ">=1.3" },
     { name = "factory-boy", specifier = ">=3.3" },
     { name = "freezegun", specifier = ">=1.5" },
     { name = "pytest", specifier = ">=9" },
     { name = "pytest-cov", specifier = ">=6" },
     { name = "pytest-django", specifier = ">=4.11" },
+    { name = "requests", specifier = ">=2.28" },
 ]
 
 [[package]]

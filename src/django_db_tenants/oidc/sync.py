@@ -1,6 +1,6 @@
 """Map OIDC userinfo claims to a local user in the tenant database.
 
-Replace via DB_TENANTS["SSO_USER_SYNC"] = "yourapp.sso.sync_user".
+Replace via ``DB_TENANTS["OIDC"]["USER_SYNC"] = "yourapp.sso.sync_user"``.
 The callable receives (client, userinfo, request) and returns a user or None
 (None = deny login).
 """
@@ -8,6 +8,8 @@ The callable receives (client, userinfo, request) and returns a user or None
 from typing import Any
 
 from django.contrib.auth import get_user_model
+
+from .strategy import get_oidc_config
 
 
 def default_user_sync(client, userinfo: dict, request=None):
@@ -22,7 +24,8 @@ def default_user_sync(client, userinfo: dict, request=None):
     user = User.objects.filter(**lookup).first()
 
     if user is None:
-        if not client.oidc_auto_create_users:
+        config = get_oidc_config(client)
+        if config is None or not config.auto_create_users:
             return None
         user = User(**{username_field: email})
         if username_field != "email" and hasattr(user, "email"):
