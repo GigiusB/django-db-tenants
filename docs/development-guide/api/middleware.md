@@ -22,7 +22,7 @@ MIDDLEWARE = [
 | Resolver returns a client | the client | the client's | the view's |
 | Resolver raises `TenantError` | not set | | `NOT_FOUND_HANDLER(request, exc)`, or `404 Unknown tenant.` |
 
-The full sequence is described in [Architecture](../../architecture/#request-lifecycle).
+The full sequence is described in [Architecture](../architecture.md#request-lifecycle).
 
 ## Custom not-found response
 
@@ -39,6 +39,6 @@ def tenant_not_found(request, exc):
 DB_TENANTS = {"NOT_FOUND_HANDLER": "myproject.tenancy.tenant_not_found"}
 ```
 
-`exc` is a `TenantNotFound` or a `TenantInactive`; see [Exceptions](../exceptions/).
+`exc` is a `TenantNotFound` or a `TenantInactive`; see [Exceptions](exceptions.md).
 
 ::: django_db_tenants.middleware

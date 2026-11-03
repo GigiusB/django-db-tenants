@@ -19,7 +19,7 @@ python manage.py migrate_tenants [--slug SLUG ...] [--include-inactive] [--fake]
 | `--fake` | flag | off | Passed to `migrate`: mark migrations as applied without running them |
 | `--verbosity` | `0`-`3` | `1` | Passed to `migrate` for each tenant |
 
-Each tenant runs `migrate --database=<slug> --no-input`, so the [router](../../api/router/) applies only the tenant apps' migrations.
+Each tenant runs `migrate --database=<slug> --no-input`, so the [router](../api/router.md) applies only the tenant apps' migrations.
 
 ## Output and exit status
 
@@ -48,5 +48,5 @@ python manage.py migrate_tenants --slug acme --fake             # mark as applie
 
 ## See also
 
-- [`migrate_tenant()`](../../api/provisioning/), which the command calls per client.
-- [`for_each_tenant()`](../../api/tasks/), to write similar commands of your own.
+- [`migrate_tenant()`](../api/provisioning.md), which the command calls per client.
+- [`for_each_tenant()`](../api/tasks.md), to write similar commands of your own.

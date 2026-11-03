@@ -41,4 +41,4 @@ Tenant 'acme' active.
 
 ## See also
 
-[`tenant_context()`](../../api/context/), which the command uses.
+[`tenant_context()`](../api/context.md), which the command uses.

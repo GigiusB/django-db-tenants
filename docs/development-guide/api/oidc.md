@@ -1,6 +1,6 @@
 # OIDC strategy
 
-`django_db_tenants.oidc` is an optional [database strategy](../strategies/), `OidcStrategy`, with the views that sign a tenant's users in through that tenant's own [OIDC](../../../glossary/#oidc) provider. The rest of the library does not know how users authenticate: a client with any other strategy uses whatever Django authentication the project sets up (the demo project uses `django.contrib.auth`'s login views with passwords stored in each tenant database).
+`django_db_tenants.oidc` is an optional [database strategy](strategies.md), `OidcStrategy`, with the views that sign a tenant's users in through that tenant's own [OIDC](../../glossary.md#oidc) provider. The rest of the library does not know how users authenticate: a client with any other strategy uses whatever Django authentication the project sets up (the demo project uses `django.contrib.auth`'s login views with passwords stored in each tenant database).
 
 ## Set up
 
@@ -28,7 +28,7 @@ python manage.py provision_tenant globex --name Globex --db-name globex \
 
 ## `OidcStrategy`
 
-The connection is built, created and dropped exactly as by [`TemplateOverlay`](../strategies/#templateoverlay): `db_params` holds `DATABASES` keys (`ENGINE`, `HOST`, `PORT`, `USER`, `PASSWORD`, `OPTIONS`, ...) and `NAME` is `client.db_name`. The OpenID Connect provider is the `SSO` object:
+The connection is built, created and dropped exactly as by [`TemplateOverlay`](strategies.md#templateoverlay): `db_params` holds `DATABASES` keys (`ENGINE`, `HOST`, `PORT`, `USER`, `PASSWORD`, `OPTIONS`, ...) and `NAME` is `client.db_name`. The OpenID Connect provider is the `SSO` object:
 
 | `db_params["SSO"]` key | Type | Default | Meaning |
 |---|---|---|---|
@@ -80,7 +80,7 @@ URL names are in the `db_tenants_oidc` namespace.
 |---|---|---|---|
 | `login/` | `login` | GET | Redirects to the IdP. A `?next=` URL on the same host is stored in the session |
 | `callback/` | `callback` | GET | Exchanges the code (Authlib validates state, nonce and the ID token signature), maps the claims to a user with `USER_SYNC`, logs them in with `AUTH_BACKEND`, stores the ID token in the session, redirects to `next` or `LOGIN_REDIRECT_URL` |
-| `logout/` | `logout` | GET, POST | Logs out locally, then performs [RP-initiated logout](../../../glossary/#rp-initiated-logout): redirects to the IdP's `end_session_endpoint` (with `id_token_hint` and `post_logout_redirect_uri`) when `RP_INITIATED_LOGOUT` is on and the IdP advertises one; otherwise to `LOGOUT_REDIRECT_URL` |
+| `logout/` | `logout` | GET, POST | Logs out locally, then performs [RP-initiated logout](../../glossary.md#rp-initiated-logout): redirects to the IdP's `end_session_endpoint` (with `id_token_hint` and `post_logout_redirect_uri`) when `RP_INITIATED_LOGOUT` is on and the IdP advertises one; otherwise to `LOGOUT_REDIRECT_URL` |
 
 | Situation | Response |
 |---|---|

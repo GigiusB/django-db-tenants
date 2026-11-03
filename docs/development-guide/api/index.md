@@ -23,24 +23,24 @@ Integration points referenced from settings by dotted path are public too: `Tena
 
 | Page | Module | Use it to |
 |---|---|---|
-| [Settings](settings/) | `conf` | Configure the library with `DB_TENANTS` |
-| [Context](context/) | `context` | Read or set the active tenant |
-| [Middleware](middleware/) | `middleware` | Resolve the tenant of each request |
-| [Resolvers](resolvers/) | `resolvers` | Map a request to a client, or write your own mapping |
-| [Router](router/) | `router` | Route queries and migrations |
-| [Database registration](db/) | `db` | Register or drop a tenant's connection alias |
-| [Database strategies](strategies/) | `strategies` | Decide how a tenant database is reached, created and dropped; write your own |
-| [Registry](registry/) | `registry` | Look clients up by host or slug, with caching |
-| [Provisioning](provisioning/) | `provisioning` | Create and migrate tenant databases |
-| [Background tasks](tasks/) | `tasks` | Run tasks and batch jobs per tenant |
-| [Cache isolation](cache/) | `cache` | Namespace cache keys per tenant |
-| [OIDC strategy](oidc/) | `oidc` | Optional: per-tenant OpenID Connect single sign-on with `OidcStrategy` |
-| [Encryption](encryption/) | `fields`, `crypto` | Encrypt secrets at rest |
-| [Admin](admin/) | `admin` | Manage clients in the Django admin |
-| [Exceptions](exceptions/) | `exceptions` | Handle resolution errors |
+| [Settings](settings.md) | `conf` | Configure the library with `DB_TENANTS` |
+| [Context](context.md) | `context` | Read or set the active tenant |
+| [Middleware](middleware.md) | `middleware` | Resolve the tenant of each request |
+| [Resolvers](resolvers.md) | `resolvers` | Map a request to a client, or write your own mapping |
+| [Router](router.md) | `router` | Route queries and migrations |
+| [Database registration](db.md) | `db` | Register or drop a tenant's connection alias |
+| [Database strategies](strategies.md) | `strategies` | Decide how a tenant database is reached, created and dropped; write your own |
+| [Registry](registry.md) | `registry` | Look clients up by host or slug, with caching |
+| [Provisioning](provisioning.md) | `provisioning` | Create and migrate tenant databases |
+| [Background tasks](tasks.md) | `tasks` | Run tasks and batch jobs per tenant |
+| [Cache isolation](cache.md) | `cache` | Namespace cache keys per tenant |
+| [OIDC strategy](oidc.md) | `oidc` | Optional: per-tenant OpenID Connect single sign-on with `OidcStrategy` |
+| [Encryption](encryption.md) | `fields`, `crypto` | Encrypt secrets at rest |
+| [Admin](admin.md) | `admin` | Manage clients in the Django admin |
+| [Exceptions](exceptions.md) | `exceptions` | Handle resolution errors |
 
-Modules not listed (`apps`, `signals`, `migrations`) have no API of their own; [Architecture](../architecture/) describes what they do.
+Modules not listed (`apps`, `signals`, `migrations`) have no API of their own; [Architecture](../architecture.md) describes what they do.
 
 ## Next steps
 
-Start with the [Settings](settings/) reference.
+Start with the [Settings](settings.md) reference.

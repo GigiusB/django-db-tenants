@@ -17,15 +17,15 @@ The repository is hosted at <https://github.com/GigiusB/django-db-tenants>; its 
     ```
 
 2. Commit on the branch; keep each commit focused on one concern, with its tests and documentation.
-3. Before pushing, run the checks in [CI/CD and build](../ci-cd/#checks-a-change-must-pass).
-4. Push the branch and open a pull request against `main`. GitHub Actions runs the full check on it ([CI/CD and build](../ci-cd/#github-actions)); merge only when **CI passed** is green.
+3. Before pushing, run the checks in [CI/CD and build](ci-cd.md#checks-a-change-must-pass).
+4. Push the branch and open a pull request against `main`. GitHub Actions runs the full check on it ([CI/CD and build](ci-cd.md#github-actions)); merge only when **CI passed** is green.
 
 Do not commit directly to `main`.
 
 ## Commits
 
 - Write the subject in the imperative mood ("Add header resolver", not "Added"), at most about 72 characters, and explain the reason in the body when it is not obvious.
-- Include in the same commit the code, the tests and the documentation pages the change affects (see [Contribution guidelines](../contributing/)).
+- Include in the same commit the code, the tests and the documentation pages the change affects (see [Contribution guidelines](contributing.md)).
 - When `uv.lock` changes, commit it with the `pyproject.toml` change that caused it.
 
 ## Pre-commit hooks
@@ -35,7 +35,7 @@ Do not commit directly to `main`.
 | Hook | Checks or fixes |
 |---|---|
 | `check-added-large-files`, `check-case-conflict`, `check-merge-conflict` | accidental large files, case clashes, conflict markers |
-| `check-toml`, `check-yaml` | syntax of TOML and YAML files. `check-yaml` runs with `--unsafe` (syntax only), because `mkdocs.yml` uses a `!!python/name:` tag for the Mermaid fence |
+| `check-toml`, `check-yaml` | syntax of TOML and YAML files |
 | `debug-statements`, `detect-private-key` | leftover `breakpoint()` / `pdb`, committed private keys |
 | `end-of-file-fixer`, `mixed-line-ending` (LF), `trailing-whitespace` | whitespace |
 | `validate-pyproject` | `pyproject.toml` against the packaging schemas |
@@ -48,4 +48,4 @@ A hook that changes files fails the commit; review the changes, stage them and c
 
 ## Next steps
 
-Run the full set of checks described in [CI/CD and build](../ci-cd/).
+Run the full set of checks described in [CI/CD and build](ci-cd.md).

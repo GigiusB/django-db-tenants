@@ -40,11 +40,11 @@ uv run tox -p auto              # everything, in parallel
 | tox environment | What it runs | Fails on |
 |---|---|---|
 | `py<python>-dj<django>-<sqlite|pg|mysql>` | `pytest --cov --cov-report=term` on that combination | a failing test, a warning, a missing migration |
-| `lint` | `pre-commit run --all-files --show-diff-on-failure` | any [hook](../git-workflow/#pre-commit-hooks): formatting, lint, lock file, YAML/TOML syntax, Django idioms |
+| `lint` | `pre-commit run --all-files --show-diff-on-failure` | any [hook](git-workflow.md#pre-commit-hooks): formatting, lint, lock file, YAML/TOML syntax, Django idioms |
 | `type` | `ty check` | a type error in `src` or `tests` |
-| `docs` | `mkdocs build --strict` | a broken page, a missing nav entry, an API page whose module does not exist, any mkdocs warning |
+| `docs` | `zensical build --strict --clean` | a link to a missing page or anchor, an API page whose module does not exist, any Zensical warning |
 
-The test matrix is listed in [Testing strategy](../testing/#the-matrix). A quick subset before pushing:
+The test matrix is listed in [Testing strategy](testing.md#the-matrix). A quick subset before pushing:
 
 ```bash
 uv run tox -e py313-dj52-sqlite,lint,type,docs
@@ -70,16 +70,16 @@ uv run --isolated --no-project --with dist/django_db_tenants-*.whl \
 ## Build the documentation
 
 ```bash
-uv run mkdocs serve             # live preview on http://127.0.0.1:8000/
-uv run mkdocs build             # static site in site/ (git-ignored)
+uv run zensical serve           # live preview on http://127.0.0.1:8000/
+uv run zensical build           # static site in site/ (git-ignored)
 uv run tox -e docs              # strict build, as the check runs it
 ```
 
-The site configuration is `mkdocs.yml`: Material theme, navigation from the `.pages` files (awesome-pages plugin), API pages generated from docstrings by mkdocstrings (static analysis of `src/`, nothing is imported), Mermaid diagrams.
+The site is built with [Zensical](https://zensical.org/), configured in `zensical.toml`: navigation generated from the file layout under `docs/`, API pages generated from docstrings by mkdocstrings (static analysis of `src/`, nothing is imported), Mermaid diagrams. Pages link each other with relative file links (`../api/settings.md#reference`); the build checks that every linked page and anchor exists.
 
 ## Publish the documentation
 
-The **Docs** workflow (`.github/workflows/docs.yml`) builds the site and publishes it on GitHub Pages at <https://gigiusb.github.io/django-db-tenants/> (`site_url` in `mkdocs.yml`).
+The **Docs** workflow (`.github/workflows/docs.yml`) builds the site and publishes it on GitHub Pages at <https://gigiusb.github.io/django-db-tenants/> (`site_url` in `zensical.toml`).
 
 | Trigger | Effect |
 |---|---|
@@ -89,7 +89,7 @@ The **Docs** workflow (`.github/workflows/docs.yml`) builds the site and publish
 
 | Job | Does |
 |---|---|
-| `build` | `uv run --frozen --only-group docs mkdocs build --strict`: only the `docs` dependency group, from `uv.lock`, without installing the project. Uploads `site/` as the Pages artifact |
+| `build` | `uv run --frozen --only-group docs zensical build --strict --clean`: only the `docs` dependency group, from `uv.lock`, without installing the project. Uploads `site/` as the Pages artifact |
 | `deploy` | Publishes the artifact with `actions/deploy-pages`, in the `github-pages` environment; the run summary links to the site |
 
 A failing strict build publishes nothing: the site online stays at the last good version. One deployment runs at a time; a newer push waits for the current one instead of cancelling it. Pull requests do not publish, but the `docs` job of the **CI** workflow builds the site on every pull request with the same strict check.
@@ -104,8 +104,8 @@ The "edit this page" links of the published site (`edit_uri`) point to `docs/` o
 
 ## Releases
 
-Release steps are in [Contribution guidelines](../contributing/#release-a-version).
+Release steps are in [Contribution guidelines](contributing.md#release-a-version).
 
 ## Next steps
 
-Read the [Contribution guidelines](../contributing/).
+Read the [Contribution guidelines](contributing.md).

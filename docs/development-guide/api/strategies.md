@@ -1,6 +1,6 @@
 # Database strategies
 
-A [database strategy](../../../glossary/#database-strategy) decides how a tenant's database is reached, created and dropped. Each `Client` names its strategy in `db_strategy`; the strategy reads its parameters from the client's encrypted `db_params` and its `db_name`.
+A [database strategy](../../glossary.md#database-strategy) decides how a tenant's database is reached, created and dropped. Each `Client` names its strategy in `db_strategy`; the strategy reads its parameters from the client's encrypted `db_params` and its `db_name`.
 
 `db_strategy` is a `StrategyField` from [django-strategy-field](https://github.com/saxix/django-strategy-field): the column stores the dotted path of a class, and reading the attribute returns an **instance bound to the client**:
 
@@ -26,11 +26,11 @@ client.get_db_strategy()  # same, but raises ImproperlyConfigured if the class c
 | Strategy | Registered | What it does |
 |---|---|---|
 | `django_db_tenants.strategies.TemplateOverlay` | always, the default | `DATABASES` keys from `db_params` laid over the template connection; `NAME = client.db_name` |
-| `django_db_tenants.oidc.OidcStrategy` | through `DATABASE_STRATEGIES` | `TemplateOverlay`, plus the client's OpenID Connect provider for per-tenant single sign-on. See [OIDC strategy](../oidc/) |
+| `django_db_tenants.oidc.OidcStrategy` | through `DATABASE_STRATEGIES` | `TemplateOverlay`, plus the client's OpenID Connect provider for per-tenant single sign-on. See [OIDC strategy](oidc.md) |
 
 ## `TemplateOverlay`
 
-The default for every client: the [template alias](../../../glossary/#template-alias) connection with the client's parameters laid over it. Its `db_params` are shaped like a Django `DATABASES` entry without `NAME`, which comes from `client.db_name`.
+The default for every client: the [template alias](../../glossary.md#template-alias) connection with the client's parameters laid over it. Its `db_params` are shaped like a Django `DATABASES` entry without `NAME`, which comes from `client.db_name`.
 
 | `db_params` key | Effect |
 |---|---|
@@ -133,6 +133,6 @@ A client row whose strategy class cannot be imported still loads (lists, admin),
 
 ## Changing a client's strategy or parameters
 
-Saving the client changes its [config version](../../../glossary/#config-version), so every process re-registers the connection with the new settings the next time it meets the client.
+Saving the client changes its [config version](../../glossary.md#config-version), so every process re-registers the connection with the new settings the next time it meets the client.
 
 ::: django_db_tenants.strategies

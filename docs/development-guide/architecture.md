@@ -10,12 +10,12 @@ There are two kinds of database:
 
 | Database | Alias | Holds |
 |---|---|---|
-| [Shared database](../../glossary/#shared-database) | `TEMPLATE_ALIAS` (default `"default"`) | The client registry (`Client`, `ClientDomain`). With `TENANT_APPS_ON_DEFAULT = True` (the default), also a copy of every tenant-app table, so superusers can log in on a [control host](../../glossary/#control-host) |
-| [Tenant database](../../glossary/#tenant-database), one per client | `client.slug` | `auth`, `sessions`, `contenttypes`, `admin` and every other app not in `SHARED_APPS` |
+| [Shared database](../glossary.md#shared-database) | `TEMPLATE_ALIAS` (default `"default"`) | The client registry (`Client`, `ClientDomain`). With `TENANT_APPS_ON_DEFAULT = True` (the default), also a copy of every tenant-app table, so superusers can log in on a [control host](../glossary.md#control-host) |
+| [Tenant database](../glossary.md#tenant-database), one per client | `client.slug` | `auth`, `sessions`, `contenttypes`, `admin` and every other app not in `SHARED_APPS` |
 
-The shared database's `DATABASES` entry is also the **template** for tenant connections. How a tenant's connection is derived from it is decided by the client's [database strategy](../../glossary/#database-strategy) (`Client.db_strategy`). The built-in `TemplateOverlay` copies the template and lays the client's `db_params` (host, user, password, options...) over it, so the simplest deployment is many databases on one server, reached with one role.
+The shared database's `DATABASES` entry is also the **template** for tenant connections. How a tenant's connection is derived from it is decided by the client's [database strategy](../glossary.md#database-strategy) (`Client.db_strategy`). The built-in `TemplateOverlay` copies the template and lays the client's `db_params` (host, user, password, options...) over it, so the simplest deployment is many databases on one server, reached with one role.
 
-The [Model reference](../models/) shows which table lives where.
+The [Model reference](models/index.md) shows which table lives where.
 
 ## Request lifecycle
 
@@ -47,10 +47,10 @@ sequenceDiagram
 Step by step (`middleware.py`):
 
 1. If `request.path` starts with one of `EXEMPT_PATHS`, the middleware sets `request.tenant = None` and passes the request on. Queries then go to the shared database.
-2. Otherwise it calls the configured [resolver](../api/resolvers/). The default, `resolve_by_host`, strips the port, lower-cases the host and returns `None` for control hosts; for any other host it asks the [registry](../api/registry/) for the matching active client.
+2. Otherwise it calls the configured [resolver](api/resolvers.md). The default, `resolve_by_host`, strips the port, lower-cases the host and returns `None` for control hosts; for any other host it asks the [registry](api/registry.md) for the matching active client.
 3. A `TenantError` (`TenantNotFound` or `TenantInactive`) ends the request: with `NOT_FOUND_HANDLER` set, its response is returned; otherwise a plain `404 Unknown tenant.`
 4. For a client, `ensure_db_registered(client)` makes sure the alias exists in this process (see [below](#runtime-database-registration)).
-5. The middleware sets `request.tenant` and the [tenant context](../../glossary/#tenant-context), calls the rest of the stack, and resets the context in a `finally` block.
+5. The middleware sets `request.tenant` and the [tenant context](../glossary.md#tenant-context), calls the rest of the stack, and resets the context in a `finally` block.
 
 The middleware must sit **before** `SessionMiddleware` and `AuthenticationMiddleware`, so that sessions and users are read from the tenant database.
 
@@ -75,8 +75,8 @@ Consequence: **never add a `ForeignKey` from a tenant app to `Client`**. The two
 
 Django reads `connections.settings` (also exposed as `connections.databases`) every time it opens a connection, and opens connections lazily. Adding an entry to that dict is enough to make a new alias usable. `ensure_db_registered(client)` in `db.py`:
 
-1. Returns at once when this process already registered the alias with the same [config version](../../glossary/#config-version) (`client.updated_at`). This is the path almost every request takes; it takes no lock.
-2. Otherwise, under a process-wide lock, it passes a deep copy of the template entry to the client's database strategy, `client.get_db_strategy().connection_settings(template)`, which returns the tenant's complete settings. With `TemplateOverlay`, that is the template with the client's `db_params` laid over it (`OPTIONS` merged) and `NAME = client.db_name`. It then sets `TEST["NAME"] = None`, whatever the strategy returned, so a test run never reuses the template's test database name. See [Database strategies](../api/strategies/).
+1. Returns at once when this process already registered the alias with the same [config version](../glossary.md#config-version) (`client.updated_at`). This is the path almost every request takes; it takes no lock.
+2. Otherwise, under a process-wide lock, it passes a deep copy of the template entry to the client's database strategy, `client.get_db_strategy().connection_settings(template)`, which returns the tenant's complete settings. With `TemplateOverlay`, that is the template with the client's `db_params` laid over it (`OPTIONS` merged) and `NAME = client.db_name`. It then sets `TEST["NAME"] = None`, whatever the strategy returned, so a test run never reuses the template's test database name. See [Database strategies](api/strategies.md).
 3. It stores the entry under `client.slug`, records the version, and closes the connection the current thread may hold for that alias, so new credentials apply at once.
 
 Registration is **per process**. Each worker registers an alias the first time it meets a client; a worker that never served a client holds no entry for it. When a client's row changes (for example a password rotation), `updated_at` changes, every process sees a new config version the next time it gets the client from the registry, and re-registers.
@@ -120,7 +120,7 @@ Management commands, Celery or RQ tasks, cron jobs and shells never pass through
 | `for_each_tenant(func)` | Runs `func(client)` for every active client (or every client) inside its context |
 | `tenant_shell <slug>` | Django shell with the tenant active |
 
-See [Background tasks](../api/tasks/) and [Context](../api/context/).
+See [Background tasks](api/tasks.md) and [Context](api/context.md).
 
 ## Provisioning
 
@@ -134,19 +134,19 @@ See [Background tasks](../api/tasks/) and [Context](../api/context/).
 2. `migrate_tenant()` registers the alias and runs `migrate --database=<slug>`.
 3. The client's status becomes `active`, which makes it resolvable by host.
 
-The [`provision_tenant`](../cli/provision-tenant/) command and the admin action **Provision database** both call `provision()`. The reverse, `drop_database(client)`, closes the current thread's connection to the tenant and asks the strategy to drop the database; the client row is left alone.
+The [`provision_tenant`](cli/provision-tenant.md) command and the admin action **Provision database** both call `provision()`. The reverse, `drop_database(client)`, closes the current thread's connection to the tenant and asks the strategy to drop the database; the client row is left alone.
 
 ## Authentication
 
-The library does not authenticate users. Tenant users are ordinary Django users stored in the tenant database (auth and sessions are tenant apps), so any Django authentication works per tenant: the demo project uses `django.contrib.auth`'s login views with passwords. For per-tenant OpenID Connect single sign-on, clients can use the optional [`OidcStrategy`](../api/oidc/), which ships its own views.
+The library does not authenticate users. Tenant users are ordinary Django users stored in the tenant database (auth and sessions are tenant apps), so any Django authentication works per tenant: the demo project uses `django.contrib.auth`'s login views with passwords. For per-tenant OpenID Connect single sign-on, clients can use the optional [`OidcStrategy`](api/oidc.md), which ships its own views.
 
 ## Secrets at rest
 
-`Client.db_params` (an `EncryptedJSONField`, holding the database password among the strategy parameters) is Fernet-encrypted when written and decrypted when read. The key is `ENCRYPTION_KEY`, or one derived from `SECRET_KEY` when it is unset. See [Encryption](../api/encryption/).
+`Client.db_params` (an `EncryptedJSONField`, holding the database password among the strategy parameters) is Fernet-encrypted when written and decrypted when read. The key is `ENCRYPTION_KEY`, or one derived from `SECRET_KEY` when it is unset. See [Encryption](api/encryption.md).
 
 ## Cache isolation
 
-Tenants share the cache servers. `cache.tenant_key_func`, set as a cache's `KEY_FUNCTION`, puts the active tenant's alias in every key (`<prefix>:<version>:@<slug>:<key>`), leaves keys written without a tenant in Django's default format, and never namespaces the registry's own `django_db_tenants:` keys. See [Cache isolation](../api/cache/).
+Tenants share the cache servers. `cache.tenant_key_func`, set as a cache's `KEY_FUNCTION`, puts the active tenant's alias in every key (`<prefix>:<version>:@<slug>:<key>`), leaves keys written without a tenant in Django's default format, and never namespaces the registry's own `django_db_tenants:` keys. See [Cache isolation](api/cache.md).
 
 ## Known constraints
 
@@ -158,5 +158,5 @@ Tenants share the cache servers. `cache.tenant_key_func`, set as a cache's `KEY_
 
 ## Next steps
 
-- Field-level details: [Model reference](../models/).
-- Every setting mentioned here: [Settings](../api/settings/).
+- Field-level details: [Model reference](models/index.md).
+- Every setting mentioned here: [Settings](api/settings.md).

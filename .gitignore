@@ -21,7 +21,7 @@ dist/
 coverage.xml
 htmlcov/
 
-# Built documentation (mkdocs build)
+# Built documentation (zensical build; its cache, .cache/, is ignored with the other dotfiles)
 site/
 
 # Demo project runtime data (SQLite databases)

@@ -17,6 +17,6 @@ if not client.is_active:
     ...
 ```
 
-The signal handlers call `invalidate()` and `invalidate_host()` when `Client` and `ClientDomain` rows change. Call them yourself after changing rows with `QuerySet.update()` or outside Django. Cache keys and limits are described in [Architecture](../../architecture/#client-lookup-cache-and-invalidation).
+The signal handlers call `invalidate()` and `invalidate_host()` when `Client` and `ClientDomain` rows change. Call them yourself after changing rows with `QuerySet.update()` or outside Django. Cache keys and limits are described in [Architecture](../architecture.md#client-lookup-cache-and-invalidation).
 
 ::: django_db_tenants.registry

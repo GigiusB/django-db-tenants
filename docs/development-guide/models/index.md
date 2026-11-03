@@ -2,12 +2,12 @@
 
 Who is this for: developers who read or change the library's models, or who design tenant apps around them.
 
-The library ships two models, both in the [shared database](../../glossary/#shared-database). Everything else a request touches (users, sessions, your apps' tables) lives in the [tenant database](../../glossary/#tenant-database) and belongs to Django or to your project.
+The library ships two models, both in the [shared database](../../glossary.md#shared-database). Everything else a request touches (users, sessions, your apps' tables) lives in the [tenant database](../../glossary.md#tenant-database) and belongs to Django or to your project.
 
 | Model | Purpose | Page |
 |---|---|---|
-| `Client` | One tenant: identity, status, database connection | [Client](client/) |
-| `ClientDomain` | A host name that resolves to a client | [ClientDomain](client-domain/) |
+| `Client` | One tenant: identity, status, database connection | [Client](client.md) |
+| `ClientDomain` | A host name that resolves to a client | [ClientDomain](client-domain.md) |
 
 ## Data model diagram
 
@@ -22,7 +22,7 @@ The diagram also shows the database strategy classes behind `Client.db_strategy`
 - `<Status>` is a field typed by the `<<choices>>` box of the same name (`Client.Status`).
 - An arrow is a foreign key, pointing at the referenced entity; a 2 px line is a mandatory foreign key. The key column is named after the target (`ClientDomain` to `Client` is `client_id`) unless the arrow has a label (`author`).
 - The bottom compartment of `Client` lists computed values (properties and methods).
-- `<<strategy>>` boxes are Python classes, not tables: the [database strategies](../api/strategies/) a client can use through `db_strategy`. `TemplateOverlay` inherits from `DatabaseStrategy` and `OidcStrategy` from `TemplateOverlay` (hollow-triangle arrows); their rows are the `db_params` keys they add (`SSO.*` are the keys of the `SSO` object). `OidcStrategy` is optional (`django_db_tenants.oidc`); the `<<dataclass>>` `OidcConfig` is what its `oidc_config()` returns.
+- `<<strategy>>` boxes are Python classes, not tables: the [database strategies](../api/strategies.md) a client can use through `db_strategy`. `TemplateOverlay` inherits from `DatabaseStrategy` and `OidcStrategy` from `TemplateOverlay` (hollow-triangle arrows); their rows are the `db_params` keys they add (`SSO.*` are the keys of the `SSO` object). `OidcStrategy` is optional (`django_db_tenants.oidc`); the `<<dataclass>>` `OidcConfig` is what its `oidc_config()` returns.
 - Colours mark the database a table lives in; the legend in the top-right corner explains them.
 
 ### Edit the diagram
@@ -35,7 +35,7 @@ The diagram also shows the database strategy classes behind `Client.db_strategy`
 
 `*.drawio.png` files are excluded from the `check-added-large-files` hook, so the diagram can grow past its 500 KB default.
 
-Update the diagram in the same change as the model, and regenerate the migration (see [Contribution guidelines](../contributing/#change-a-model)).
+Update the diagram in the same change as the model, and regenerate the migration (see [Contribution guidelines](../contributing.md#change-a-model)).
 
 ## Where tables live
 
@@ -44,8 +44,8 @@ Update the diagram in the same change as the model, and regenerate the migration
 | `django_db_tenants_client`, `django_db_tenants_clientdomain` | yes | never |
 | Tenant-app tables (`auth_*`, `django_session`, `django_content_type`, your apps) | when `TENANT_APPS_ON_DEFAULT = True` (default) | yes |
 
-The [router](../api/router/) enforces this through `allow_migrate`, so `migrate` on the shared database and [`migrate_tenants`](../cli/migrate-tenants/) on the tenants create exactly these tables.
+The [router](../api/router.md) enforces this through `allow_migrate`, so `migrate` on the shared database and [`migrate_tenants`](../cli/migrate-tenants.md) on the tenants create exactly these tables.
 
 ## Next steps
 
-Read the field-by-field reference of [Client](client/).
+Read the field-by-field reference of [Client](client.md).

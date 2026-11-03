@@ -127,4 +127,4 @@ uv run pytest --cov --cov-report=term
 
 ## Next steps
 
-See which checks a change must pass in [CI/CD and build](../ci-cd/).
+See which checks a change must pass in [CI/CD and build](ci-cd.md).

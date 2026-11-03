@@ -1,6 +1,6 @@
 # Database registration
 
-`django_db_tenants.db` adds tenant connections to `django.db.connections` while the process runs. See [Runtime database registration](../../architecture/#runtime-database-registration) for the mechanism.
+`django_db_tenants.db` adds tenant connections to `django.db.connections` while the process runs. See [Runtime database registration](../architecture.md#runtime-database-registration) for the mechanism.
 
 ## Use it
 
@@ -18,7 +18,7 @@ with connections[alias].cursor() as cursor:
 
 | Function | Effect |
 |---|---|
-| `ensure_db_registered(client, force=False)` | Registers `client.slug` with the settings returned by the client's [database strategy](../strategies/), unless this process already has it at the same config version. `force=True` re-registers anyway. Returns the alias |
+| `ensure_db_registered(client, force=False)` | Registers `client.slug` with the settings returned by the client's [database strategy](strategies.md), unless this process already has it at the same config version. `force=True` re-registers anyway. Returns the alias |
 | `is_registered(alias)` | Whether the alias is in `connections.settings` (for any reason, including aliases from `DATABASES`) |
 | `unregister_db(alias)` | Closes this thread's connection for the alias and removes it from this process |
 

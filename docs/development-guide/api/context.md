@@ -1,6 +1,6 @@
 # Context
 
-`django_db_tenants.context` holds the [tenant context](../../../glossary/#tenant-context): the client whose database the router uses for tenant apps. It is a `ContextVar`, so it is correct under threads, `asyncio` and asgiref's `sync_to_async` / `async_to_sync`.
+`django_db_tenants.context` holds the [tenant context](../../glossary.md#tenant-context): the client whose database the router uses for tenant apps. It is a `ContextVar`, so it is correct under threads, `asyncio` and asgiref's `sync_to_async` / `async_to_sync`.
 
 ## Read the active tenant
 
@@ -25,7 +25,7 @@ with tenant_context(None):  # explicitly the shared database
     ...
 ```
 
-`tenant_context()` looks a slug up through the [registry](../registry/) (raising `TenantNotFound` for unknown slugs, without checking the status), registers the database alias, activates the client and restores the previous value on exit. Contexts nest.
+`tenant_context()` looks a slug up through the [registry](registry.md) (raising `TenantNotFound` for unknown slugs, without checking the status), registers the database alias, activates the client and restores the previous value on exit. Contexts nest.
 
 `set_current_tenant()` / `reset_current_tenant()` are the low-level pair the middleware uses; prefer `tenant_context()`, which also registers the alias.
 

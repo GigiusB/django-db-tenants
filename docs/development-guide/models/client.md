@@ -1,15 +1,15 @@
 # Client
 
-`django_db_tenants.models.Client`: one [tenant](../../../glossary/#tenant). Table `django_db_tenants_client`, in the [shared database](../../../glossary/#shared-database) only.
+`django_db_tenants.models.Client`: one [tenant](../../glossary.md#tenant). Table `django_db_tenants_client`, in the [shared database](../../glossary.md#shared-database) only.
 
-A client row tells the library three things: whether the tenant may be served (`status`), how to reach its database (`db_strategy`, `db_name`, `db_params`), and which host names it answers on (its [domains](../client-domain/)). Changing any of them takes effect without a restart.
+A client row tells the library three things: whether the tenant may be served (`status`), how to reach its database (`db_strategy`, `db_name`, `db_params`), and which host names it answers on (its [domains](client-domain.md)). Changing any of them takes effect without a restart.
 
 ## Relations
 
 | Relation | Target | Notes |
 |---|---|---|
-| reverse `domains` | [ClientDomain](../client-domain/) | `client.domains.all()`; deleting a client deletes its domains (`CASCADE`) |
-| tenant database | `connections[client.slug]` | not a database relation: the alias is registered at runtime from the [database strategy](../../api/strategies/) |
+| reverse `domains` | [ClientDomain](client-domain.md) | `client.domains.all()`; deleting a client deletes its domains (`CASCADE`) |
+| tenant database | `connections[client.slug]` | not a database relation: the alias is registered at runtime from the [database strategy](../api/strategies.md) |
 
 Tenant-app models must not have a `ForeignKey` to `Client`: it lives in another database. Store the slug instead.
 
@@ -33,7 +33,7 @@ Tenant-app models must not have a `ForeignKey` to `Client`: it lives in another 
 
 ### Database
 
-How the database is reached, created and dropped is up to the client's [database strategy](../../../glossary/#database-strategy); see [Database strategies](../../api/strategies/).
+How the database is reached, created and dropped is up to the client's [database strategy](../../glossary.md#database-strategy); see [Database strategies](../api/strategies.md).
 
 | Field | Type | Required | Default | Meaning |
 |---|---|---|---|---|
@@ -41,13 +41,13 @@ How the database is reached, created and dropped is up to the client's [database
 | `db_name` | `CharField(200)` | yes | | Database name (a file path on SQLite) |
 | `db_params` | `EncryptedJSONField` | no | `{}` | Strategy parameters, a JSON object, Fernet-encrypted at rest. Keys are defined and validated by the strategy |
 
-With the default `TemplateOverlay` strategy, `db_params` keys are `DATABASES` keys laid over the [template alias](../../../glossary/#template-alias) connection: `ENGINE`, `HOST`, `PORT`, `USER`, `PASSWORD`, `OPTIONS` (merged), `CONN_MAX_AGE`, `CONN_HEALTH_CHECKS`, plus `MAINTENANCE_DB` for PostgreSQL provisioning. Missing keys inherit the template's value. For example:
+With the default `TemplateOverlay` strategy, `db_params` keys are `DATABASES` keys laid over the [template alias](../../glossary.md#template-alias) connection: `ENGINE`, `HOST`, `PORT`, `USER`, `PASSWORD`, `OPTIONS` (merged), `CONN_MAX_AGE`, `CONN_HEALTH_CHECKS`, plus `MAINTENANCE_DB` for PostgreSQL provisioning. Missing keys inherit the template's value. For example:
 
 ```json
 {"HOST": "db2.internal", "USER": "acme", "PASSWORD": "s3cret", "OPTIONS": {"sslmode": "require"}}
 ```
 
-Other strategies define other keys: the optional [`OidcStrategy`](../../api/oidc/) adds an `SSO` object with the tenant's OpenID Connect provider.
+Other strategies define other keys: the optional [`OidcStrategy`](../api/oidc.md) adds an `SSO` object with the tenant's OpenID Connect provider.
 
 ### Timestamps
 
@@ -97,4 +97,4 @@ provision(client)  # CREATE DATABASE, migrate, status = active
 
 ## Next steps
 
-Read [ClientDomain](../client-domain/), or the [`provision_tenant`](../../cli/provision-tenant/) command, which does all of the above in one call.
+Read [ClientDomain](client-domain.md), or the [`provision_tenant`](../cli/provision-tenant.md) command, which does all of the above in one call.

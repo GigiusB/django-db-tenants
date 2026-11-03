@@ -1,6 +1,6 @@
 # Local environment setup
 
-Who is this for: contributors who need the whole toolchain, including the PostgreSQL and MySQL test backends. For SQLite only, the [Quick start](../quick-start/) is enough.
+Who is this for: contributors who need the whole toolchain, including the PostgreSQL and MySQL test backends. For SQLite only, the [Quick start](quick-start.md) is enough.
 
 ## Prerequisites
 
@@ -25,7 +25,7 @@ This installs the library in editable mode and the `dev` dependency group, which
 | `test` | pytest, pytest-django, pytest-cov, factory-boy, freezegun, plus Authlib and requests (the `oidc` extra) | `pytest`, every tox test environment |
 | `lint` | ruff, ty, django-stubs, pre-commit | `tox -e lint`, `tox -e type`, the git hooks |
 | `db` | psycopg, mysqlclient | plain `pytest` runs with `TEST_DB=pg` or `TEST_DB=mysql` |
-| `docs` | mkdocs, mkdocs-material, mkdocs-awesome-pages-plugin, mkdocstrings, ruff (mkdocstrings formats the API signatures with it) | `mkdocs serve`, `tox -e docs` |
+| `docs` | zensical, mkdocstrings, ruff (mkdocstrings formats the API signatures with it) | `zensical serve`, `tox -e docs` |
 | `dev` | all of the above plus tox and tox-uv | `uv sync` (default group) |
 
 Without the MySQL headers, skip the `db` group and work on SQLite and PostgreSQL through tox:
@@ -40,7 +40,7 @@ uv sync --no-group db
 uv run pre-commit install
 ```
 
-The hooks run on every commit. The list is in [Git workflow](../git-workflow/#pre-commit-hooks).
+The hooks run on every commit. The list is in [Git workflow](git-workflow.md#pre-commit-hooks).
 
 ## Start the database servers
 
@@ -98,7 +98,7 @@ TEST_DB=pg uv run pytest          # PostgreSQL from .env
 TEST_DB=mysql uv run pytest       # MySQL from .env
 uv run ty check                   # types
 uv run pre-commit run --all-files # every lint hook
-uv run mkdocs build               # this site
+uv run zensical build --strict    # this site
 ```
 
 ## Configure your IDE
@@ -111,11 +111,11 @@ uv run mkdocs build               # this site
 ## Preview the docs
 
 ```bash
-uv run mkdocs serve
+uv run zensical serve
 ```
 
-The site reloads on every change under `docs/`, `mkdocs.yml` and `src/` (the API pages are generated from docstrings).
+The site reloads on every change under `docs/`, `zensical.toml` and `src/` (the API pages are generated from docstrings).
 
 ## Next steps
 
-Learn the layout in [Codebase structure](../codebase-structure/).
+Learn the layout in [Codebase structure](codebase-structure.md).

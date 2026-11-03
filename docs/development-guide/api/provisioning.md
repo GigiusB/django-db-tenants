@@ -1,6 +1,6 @@
 # Provisioning
 
-`django_db_tenants.provisioning` creates, migrates and drops tenant databases at runtime. [`provision_tenant`](../../cli/provision-tenant/), [`migrate_tenants`](../../cli/migrate-tenants/) and the admin action are built on it. The database work is delegated to the client's [database strategy](../strategies/).
+`django_db_tenants.provisioning` creates, migrates and drops tenant databases at runtime. [`provision_tenant`](../cli/provision-tenant.md), [`migrate_tenants`](../cli/migrate-tenants.md) and the admin action are built on it. The database work is delegated to the client's [database strategy](strategies.md).
 
 | Function | Effect |
 |---|---|
@@ -9,7 +9,7 @@
 | `provision(client, create_db=True, migrate=True, activate=True)` | Create, migrate, then status `active`. Safe to re-run |
 | `drop_database(client)` | Closes the current thread's connection to the tenant and unregisters its alias, then `client.get_db_strategy().drop_database()`. The client row is not changed: delete it or set its status yourself |
 
-How each backend is handled by the built-in `TemplateOverlay` strategy is described in [Database strategies](../strategies/#templateoverlay). The connecting account needs the right to create and drop databases (`CREATEDB` on PostgreSQL, `CREATE` and `DROP` on MySQL).
+How each backend is handled by the built-in `TemplateOverlay` strategy is described in [Database strategies](strategies.md#templateoverlay). The connecting account needs the right to create and drop databases (`CREATEDB` on PostgreSQL, `CREATE` and `DROP` on MySQL).
 
 !!! warning "Dropping a database in use"
     `drop_database()` closes only the calling thread's connection. Other processes or threads still connected to the tenant make PostgreSQL refuse the `DROP`. Suspend the client first, and wait for connections to close (`CONN_MAX_AGE`).

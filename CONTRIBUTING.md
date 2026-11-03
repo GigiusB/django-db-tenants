@@ -7,7 +7,7 @@ This page gets you from a fresh clone to a passing test run. The [developer's gu
 | Tool | Why |
 |---|---|
 | [uv](https://docs.astral.sh/uv/) | Creates the virtual environment, installs the dependencies and runs every tool. It downloads the Python versions it needs (3.13 from `.python-version`, plus the tox matrix: 3.11, 3.12, 3.15) |
-| [ruff](https://docs.astral.sh/ruff/) | Lints and formats the code (pre-commit hooks, `tox -e lint`) and formats the API signatures of the docs (`mkdocs`, `tox -e docs`). Installed by `uv sync`; no separate install needed |
+| [ruff](https://docs.astral.sh/ruff/) | Lints and formats the code (pre-commit hooks, `tox -e lint`) and formats the API signatures of the docs (`zensical`, `tox -e docs`). Installed by `uv sync`; no separate install needed |
 | MySQL client headers | `mysqlclient` is built from source: `libmysqlclient-dev` on Debian/Ubuntu, `mysql-client` on Homebrew (see `.envrc.example`). Without them, use `uv sync --no-group db` and test MySQL through tox only |
 | Docker with Compose | Optional: PostgreSQL and MySQL servers for the `pg` and `mysql` test backends. Any PostgreSQL 15+ / MySQL 8.4+ server works too |
 
@@ -53,7 +53,7 @@ The same checks one by one:
 ```bash
 uv run ruff check --fix . && uv run ruff format .
 uv run ty check
-uv run mkdocs serve   # the developer's guide on http://127.0.0.1:8000/, reloaded on every change
+uv run zensical serve # the developer's guide on http://127.0.0.1:8000/, reloaded on every change
 ```
 
 ## Try the demo

@@ -1,6 +1,6 @@
 # Admin
 
-`django_db_tenants.admin` registers `Client` in the Django admin, with its domains inline. Use it on a [control host](../../../glossary/#control-host): `Client` lives in the shared database.
+`django_db_tenants.admin` registers `Client` in the Django admin, with its domains inline. Use it on a [control host](../../glossary.md#control-host): `Client` lives in the shared database.
 
 ## Client admin
 

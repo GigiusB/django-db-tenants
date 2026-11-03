@@ -64,12 +64,10 @@ db = [
     "psycopg[binary]>=3.1",
     "mysqlclient>=2.2",
 ]
-# Developer's guide in docs/ (mkdocs.yml): `uv run mkdocs serve`.
+# Developer's guide in docs/ (zensical.toml): `uv run zensical serve`.
 docs = [
-    "mkdocs>=1.6,<2",
-    "mkdocs-awesome-pages-plugin>=2.10",
-    "mkdocs-material>=9.6",
-    "mkdocstrings[python]>=0.29",
+    "zensical>=0.0.74",
+    "mkdocstrings[python]>=0.29",  # the API pages; Zensical runs it as a Markdown extension
     "ruff>=0.15",  # mkdocstrings formats the API signatures with it
 ]
 dev = [

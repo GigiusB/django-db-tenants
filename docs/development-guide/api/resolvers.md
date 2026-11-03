@@ -1,6 +1,6 @@
 # Resolvers
 
-A [resolver](../../../glossary/#resolver) maps a request to a client. The middleware calls the one named by `DB_TENANTS["RESOLVER"]`.
+A [resolver](../../glossary.md#resolver) maps a request to a client. The middleware calls the one named by `DB_TENANTS["RESOLVER"]`.
 
 ## Contract
 
@@ -14,7 +14,7 @@ def resolver(request) -> Client | None: ...
 | `None` | no tenant: serve from the shared database |
 | raises `TenantNotFound` / `TenantInactive` | refuse: the middleware returns the not-found response |
 
-The resolver runs on every non-exempt request, so it must be cheap: use the cached lookups of the [registry](../registry/).
+The resolver runs on every non-exempt request, so it must be cheap: use the cached lookups of the [registry](registry.md).
 
 ## Built-in resolvers
 

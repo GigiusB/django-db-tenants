@@ -1,14 +1,14 @@
 # ClientDomain
 
-`django_db_tenants.models.ClientDomain`: a host name that belongs to a [Client](../client/). Table `django_db_tenants_clientdomain`, in the [shared database](../../../glossary/#shared-database) only.
+`django_db_tenants.models.ClientDomain`: a host name that belongs to a [Client](client.md). Table `django_db_tenants_clientdomain`, in the [shared database](../../glossary.md#shared-database) only.
 
-`resolve_by_host`, the default [resolver](../../../glossary/#resolver), looks the request's host up in this table. A client can have any number of domains.
+`resolve_by_host`, the default [resolver](../../glossary.md#resolver), looks the request's host up in this table. A client can have any number of domains.
 
 ## Relations
 
 | Field | Target | On delete | Reverse accessor |
 |---|---|---|---|
-| `client` (required) | [Client](../client/) | `CASCADE` | `client.domains` |
+| `client` (required) | [Client](client.md) | `CASCADE` | `client.domains` |
 
 ## Fields
 
@@ -21,7 +21,7 @@ Default ordering: primary domains first, then `domain`. `str(domain)` is the hos
 
 ## Side effects of saving and deleting
 
-Saving or deleting a domain deletes the registry cache entry of that host and every cache entry of its client, so a new domain resolves at once in processes that share the cache. Renaming a domain leaves the old host's entry cached until `CACHE_TTL` expires; see [Architecture](../../architecture/#client-lookup-cache-and-invalidation).
+Saving or deleting a domain deletes the registry cache entry of that host and every cache entry of its client, so a new domain resolves at once in processes that share the cache. Renaming a domain leaves the old host's entry cached until `CACHE_TTL` expires; see [Architecture](../architecture.md#client-lookup-cache-and-invalidation).
 
 ## Example
 
@@ -35,4 +35,4 @@ ClientDomain.objects.using("default").create(client=acme, domain="ACME.example.o
 
 ## Next steps
 
-See the commands that manage clients and domains in the [CLI reference](../../cli/).
+See the commands that manage clients and domains in the [CLI reference](../cli/index.md).

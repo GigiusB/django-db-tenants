@@ -9,33 +9,33 @@ src/django_db_tenants/        the library (the only package that ships)
 tests/                        pytest suite
 tests/_extra/testutils/       test utilities, importable as `testutils`
 tests/demo/                   example Django project, importable as `demo` and `notes`
-docs/                         this site (mkdocs)
+docs/                         this site (Zensical)
 ```
 
 ## The library: `src/django_db_tenants`
 
 | Module | Responsibility | Reference |
 |---|---|---|
-| `__init__.py` | Public entry points: `get_current_tenant`, `get_current_tenant_alias`, `tenant_context`, `ensure_db_registered`; `__version__` | [API reference](../api/) |
+| `__init__.py` | Public entry points: `get_current_tenant`, `get_current_tenant_alias`, `tenant_context`, `ensure_db_registered`; `__version__` | [API reference](api/index.md) |
 | `apps.py` | `AppConfig` (`label = "django_db_tenants"`, `BigAutoField`); connects the signal handlers and registers `DATABASE_STRATEGIES` in `ready()` | |
-| `conf.py` | `DB_TENANTS` settings with defaults; dotted paths are imported on access | [Settings](../api/settings/) |
-| `context.py` | The [tenant context](../../glossary/#tenant-context) (`ContextVar`) and `tenant_context()` | [Context](../api/context/) |
-| `middleware.py` | `TenantMiddleware`: resolves the tenant of each request, sync and async | [Middleware](../api/middleware/) |
-| `resolvers.py` | `resolve_by_host`, `resolve_by_header` | [Resolvers](../api/resolvers/) |
-| `router.py` | `TenantRouter`: shared apps to the shared database, the rest to the active tenant | [Router](../api/router/) |
-| `db.py` | [Runtime registration](../../glossary/#runtime-registration) of tenant connections | [Database registration](../api/db/) |
-| `strategies.py` | [Database strategies](../../glossary/#database-strategy): `DatabaseStrategy`, the built-in `TemplateOverlay` (connection settings, create and drop per backend), the strategy `registry` | [Database strategies](../api/strategies/) |
-| `registry.py` | Cached `Client` lookups by host and by slug, cache invalidation | [Registry](../api/registry/) |
-| `signals.py` | Invalidates the registry cache and unregisters connections when `Client` / `ClientDomain` rows change | [Architecture](../architecture/#client-lookup-cache-and-invalidation) |
-| `models.py` | `Client`, `ClientDomain` | [Model reference](../models/) |
-| `fields.py`, `crypto.py` | `EncryptedTextField`, `EncryptedJSONField` and the Fernet helpers behind them | [Encryption](../api/encryption/) |
-| `provisioning.py` | `create_database`, `migrate_tenant`, `provision`, `drop_database`, delegating to the strategy | [Provisioning](../api/provisioning/) |
-| `tasks.py` | `with_tenant`, `for_each_tenant` for background work | [Background tasks](../api/tasks/) |
-| `cache.py` | `tenant_key_func`: per-tenant cache key namespaces | [Cache isolation](../api/cache/) |
-| `exceptions.py` | `TenantError`, `TenantNotFound`, `TenantInactive` | [Exceptions](../api/exceptions/) |
-| `admin.py` | `ClientAdmin` with the domain inline and the provisioning action | [Admin](../api/admin/) |
-| `oidc/` | Optional, used by nothing else in the package: `OidcStrategy` and `OidcConfig` (`strategy.py`), its settings (`conf.py`), Authlib clients (`client.py`), claims-to-user mapping (`sync.py`), views and URLs | [OIDC strategy](../api/oidc/) |
-| `management/commands/` | `provision_tenant`, `migrate_tenants`, `tenant_shell` | [CLI reference](../cli/) |
+| `conf.py` | `DB_TENANTS` settings with defaults; dotted paths are imported on access | [Settings](api/settings.md) |
+| `context.py` | The [tenant context](../glossary.md#tenant-context) (`ContextVar`) and `tenant_context()` | [Context](api/context.md) |
+| `middleware.py` | `TenantMiddleware`: resolves the tenant of each request, sync and async | [Middleware](api/middleware.md) |
+| `resolvers.py` | `resolve_by_host`, `resolve_by_header` | [Resolvers](api/resolvers.md) |
+| `router.py` | `TenantRouter`: shared apps to the shared database, the rest to the active tenant | [Router](api/router.md) |
+| `db.py` | [Runtime registration](../glossary.md#runtime-registration) of tenant connections | [Database registration](api/db.md) |
+| `strategies.py` | [Database strategies](../glossary.md#database-strategy): `DatabaseStrategy`, the built-in `TemplateOverlay` (connection settings, create and drop per backend), the strategy `registry` | [Database strategies](api/strategies.md) |
+| `registry.py` | Cached `Client` lookups by host and by slug, cache invalidation | [Registry](api/registry.md) |
+| `signals.py` | Invalidates the registry cache and unregisters connections when `Client` / `ClientDomain` rows change | [Architecture](architecture.md#client-lookup-cache-and-invalidation) |
+| `models.py` | `Client`, `ClientDomain` | [Model reference](models/index.md) |
+| `fields.py`, `crypto.py` | `EncryptedTextField`, `EncryptedJSONField` and the Fernet helpers behind them | [Encryption](api/encryption.md) |
+| `provisioning.py` | `create_database`, `migrate_tenant`, `provision`, `drop_database`, delegating to the strategy | [Provisioning](api/provisioning.md) |
+| `tasks.py` | `with_tenant`, `for_each_tenant` for background work | [Background tasks](api/tasks.md) |
+| `cache.py` | `tenant_key_func`: per-tenant cache key namespaces | [Cache isolation](api/cache.md) |
+| `exceptions.py` | `TenantError`, `TenantNotFound`, `TenantInactive` | [Exceptions](api/exceptions.md) |
+| `admin.py` | `ClientAdmin` with the domain inline and the provisioning action | [Admin](api/admin.md) |
+| `oidc/` | Optional, used by nothing else in the package: `OidcStrategy` and `OidcConfig` (`strategy.py`), its settings (`conf.py`), Authlib clients (`client.py`), claims-to-user mapping (`sync.py`), views and URLs | [OIDC strategy](api/oidc.md) |
+| `management/commands/` | `provision_tenant`, `migrate_tenants`, `tenant_shell` | [CLI reference](cli/index.md) |
 | `migrations/` | Schema of `Client` and `ClientDomain` (shared database only) | |
 | `py.typed` | Marks the package as typed (PEP 561) | |
 
@@ -77,7 +77,7 @@ Every module reads its settings through `conf.app_settings` (`oidc` through `oid
 | `oidc.py` | `FakeOIDCClient`, a stand-in for the Authlib client in OIDC view tests |
 | `strategies.py` | `EnvironmentPassword`, a custom database strategy registered by the test settings, and `Unregistered`, one that is not |
 
-See [Testing strategy](../testing/) for how they fit together.
+See [Testing strategy](testing.md) for how they fit together.
 
 ## Demo project: `tests/demo`
 
@@ -85,7 +85,7 @@ See [Testing strategy](../testing/) for how they fit together.
 |---|---|
 | `demo/settings.py` | Every setting the library needs, marked `# django-db-tenants` |
 | `demo/urls.py` | Django's own login views (`django.contrib.auth.urls`): tenant users log in with a password stored in their tenant database |
-| `demo/views.py` | `request.tenant`, `get_current_tenant()`, a health check on an [exempt path](../../glossary/#exempt-path) |
+| `demo/views.py` | `request.tenant`, `get_current_tenant()`, a health check on an [exempt path](../glossary.md#exempt-path) |
 | `notes/` | An ordinary app whose tables live in every tenant database |
 | `notes/tasks.py` | Background jobs with `@with_tenant` and `for_each_tenant` |
 | `notes/management/commands/seed_demo.py` | Onboarding tenants with `provision_tenant` |
@@ -102,10 +102,10 @@ See [Testing strategy](../testing/) for how they fit together.
 | `pytest.toml` | pytest and pytest-django: test paths, Python path, settings module, strict options, warnings as errors |
 | `.coveragerc.toml` | coverage.py: source package, branch coverage, report options |
 | `tox.ini` | The Python × Django × database matrix plus `lint`, `type` and `docs` |
-| `.github/workflows/ci.yml` | GitHub Actions: every tox environment, the package build ([CI/CD and build](../ci-cd/#github-actions)) |
-| `.github/workflows/docs.yml` | GitHub Actions: builds this site from `develop` and publishes it on GitHub Pages ([Publish the documentation](../ci-cd/#publish-the-documentation)) |
+| `.github/workflows/ci.yml` | GitHub Actions: every tox environment, the package build ([CI/CD and build](ci-cd.md#github-actions)) |
+| `.github/workflows/docs.yml` | GitHub Actions: builds this site from `develop` and publishes it on GitHub Pages ([Publish the documentation](ci-cd.md#publish-the-documentation)) |
 | `.pre-commit-config.yaml` | Git hooks |
-| `mkdocs.yml` | This site |
+| `zensical.toml` | This site: theme, Markdown extensions, mkdocstrings options |
 | `docker-compose.yml` | PostgreSQL and MySQL for the server test backends |
 | `.env.example`, `.envrc.example` | Templates for the local environment files |
 | `.editorconfig` | Indentation, line endings, final newline |
@@ -113,4 +113,4 @@ See [Testing strategy](../testing/) for how they fit together.
 
 ## Next steps
 
-See how the pieces work together at runtime in [Architecture](../architecture/).
+See how the pieces work together at runtime in [Architecture](architecture.md).
