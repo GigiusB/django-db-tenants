@@ -14,6 +14,54 @@ site_dir = "site"
 # `zensical serve` also rebuilds when docstrings change (the API pages are generated from them).
 watch = ["src"]
 
+# Reading order of the guide (the map in development-guide/index.md). A section's first entry
+# without a title is its index page (theme feature navigation.indexes); the other titles repeat
+# each page's heading. Add new pages here.
+nav = [
+  { "Home" = "index.md" },
+  { "Development guide" = [
+    "development-guide/index.md",
+    { "Quick start" = "development-guide/quick-start.md" },
+    { "Local environment setup" = "development-guide/local-setup.md" },
+    { "Codebase structure" = "development-guide/codebase-structure.md" },
+    { "Architecture" = "development-guide/architecture.md" },
+    { "Model reference" = [
+      "development-guide/models/index.md",
+      { "Client" = "development-guide/models/client.md" },
+      { "ClientDomain" = "development-guide/models/client-domain.md" },
+    ] },
+    { "CLI reference" = [
+      "development-guide/cli/index.md",
+      { "provision_tenant" = "development-guide/cli/provision-tenant.md" },
+      { "migrate_tenants" = "development-guide/cli/migrate-tenants.md" },
+      { "tenant_shell" = "development-guide/cli/tenant-shell.md" },
+    ] },
+    { "API reference" = [
+      "development-guide/api/index.md",
+      { "Settings" = "development-guide/api/settings.md" },
+      { "Context" = "development-guide/api/context.md" },
+      { "Middleware" = "development-guide/api/middleware.md" },
+      { "Resolvers" = "development-guide/api/resolvers.md" },
+      { "Router" = "development-guide/api/router.md" },
+      { "Database registration" = "development-guide/api/db.md" },
+      { "Database strategies" = "development-guide/api/strategies.md" },
+      { "Registry" = "development-guide/api/registry.md" },
+      { "Provisioning" = "development-guide/api/provisioning.md" },
+      { "Background tasks" = "development-guide/api/tasks.md" },
+      { "Cache isolation" = "development-guide/api/cache.md" },
+      { "OIDC strategy" = "development-guide/api/oidc.md" },
+      { "Encryption" = "development-guide/api/encryption.md" },
+      { "Admin" = "development-guide/api/admin.md" },
+      { "Exceptions" = "development-guide/api/exceptions.md" },
+    ] },
+    { "Testing strategy" = "development-guide/testing.md" },
+    { "Git workflow" = "development-guide/git-workflow.md" },
+    { "CI/CD and build" = "development-guide/ci-cd.md" },
+    { "Contribution guidelines" = "development-guide/contributing.md" },
+  ] },
+  { "Glossary" = "glossary.md" },
+]
+
 [project.theme]
 features = [
   "content.code.copy",

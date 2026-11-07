@@ -75,7 +75,7 @@ uv run zensical build           # static site in site/ (git-ignored)
 uv run tox -e docs              # strict build, as the check runs it
 ```
 
-The site is built with [Zensical](https://zensical.org/), configured in `zensical.toml`: navigation generated from the file layout under `docs/`, API pages generated from docstrings by mkdocstrings (static analysis of `src/`, nothing is imported), Mermaid diagrams. Pages link each other with relative file links (`../api/settings.md#reference`); the build checks that every linked page and anchor exists.
+The site is built with [Zensical](https://zensical.org/), configured in `zensical.toml`: an explicit `nav` in the guide's reading order (a new page needs an entry there), API pages generated from docstrings by mkdocstrings (static analysis of `src/`, nothing is imported), Mermaid diagrams. Pages link each other with relative file links (`../api/settings.md#reference`); the build checks that every linked page and anchor exists.
 
 ## Publish the documentation
 
