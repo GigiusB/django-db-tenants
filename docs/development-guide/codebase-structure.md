@@ -95,7 +95,7 @@ See [Testing strategy](testing.md) for how they fit together.
 
 | File | Configures |
 |---|---|
-| `pyproject.toml` | Package metadata, runtime dependencies (Django, Authlib, requests, cryptography, django-strategy-field) and extras (`postgres`, `mysql`), dependency groups, setuptools package discovery |
+| `pyproject.toml` | Package metadata, runtime dependencies (Django, cryptography, django-strategy-field) and extras (`postgres`, `mysql`, `oidc`: Authlib and requests), dependency groups, setuptools package discovery |
 | `uv.lock` | Locked versions of every dependency; kept current by the `uv-lock` hook |
 | `ruff.toml` | Lint rules and formatting (line length 120, target Python 3.11) |
 | `ty.toml` | Type checking: Python 3.11, extra import paths, per-file overrides |
@@ -105,7 +105,7 @@ See [Testing strategy](testing.md) for how they fit together.
 | `.github/workflows/ci.yml` | GitHub Actions: every tox environment, the package build ([CI/CD and build](ci-cd.md#github-actions)) |
 | `.github/workflows/docs.yml` | GitHub Actions: builds this site from `develop` and publishes it on GitHub Pages ([Publish the documentation](ci-cd.md#publish-the-documentation)) |
 | `.pre-commit-config.yaml` | Git hooks |
-| `zensical.toml` | This site: theme, Markdown extensions, mkdocstrings options |
+| `zensical.toml` | This site: navigation, theme, Markdown extensions, mkdocstrings options |
 | `tools/check_zensical_nav.py` | Pre-commit hook: every docs page is in the `nav` of `zensical.toml` |
 | `docker-compose.yml` | PostgreSQL and MySQL for the server test backends |
 | `.env.example`, `.envrc.example` | Templates for the local environment files |
