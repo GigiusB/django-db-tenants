@@ -43,6 +43,7 @@ Do not commit directly to `main`.
 | `django-upgrade` (target Django 4.2) | rewrites outdated Django idioms |
 | `ruff-check --fix`, `ruff-format` | lint rules and formatting from `ruff.toml` |
 | `ty` | type checking (runs `uv run --frozen ty check` on the whole project) |
+| `zensical-nav` | every page under `docs/` has an entry in the `nav` of `zensical.toml`, and every entry names an existing page (`tools/check_zensical_nav.py`; runs when a page or `zensical.toml` changes) |
 
 A hook that changes files fails the commit; review the changes, stage them and commit again.
 

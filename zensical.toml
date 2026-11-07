@@ -16,7 +16,7 @@ watch = ["src"]
 
 # Reading order of the guide (the map in development-guide/index.md). A section's first entry
 # without a title is its index page (theme feature navigation.indexes); the other titles repeat
-# each page's heading. Add new pages here.
+# each page's heading. Add new pages here: the zensical-nav pre-commit hook fails otherwise.
 nav = [
   { "Home" = "index.md" },
   { "Development guide" = [

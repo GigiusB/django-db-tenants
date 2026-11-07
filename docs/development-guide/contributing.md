@@ -61,7 +61,7 @@ Remember that library models live in the shared database only; they must not be 
 2. Query library models with `.using(app_settings.TEMPLATE_ALIAS)`; switch tenants with `tenant_context()` or `for_each_tenant()`.
 3. Make failures visible in the exit status, as `migrate_tenants` does.
 4. Test it with `call_command` (see `test_provisioning.py`).
-5. Add a page to the [CLI reference](cli/index.md) (`docs/development-guide/cli/<name>.md`) and an entry to `nav` in `zensical.toml`.
+5. Add a page to the [CLI reference](cli/index.md) (`docs/development-guide/cli/<name>.md`) and an entry to `nav` in `zensical.toml` (the `zensical-nav` hook fails without it).
 
 ### Add a database strategy
 
@@ -83,7 +83,7 @@ Registering a strategy needs no migration.
 
 1. Implement the function in its module, with type hints and a docstring: the docstring is published on the module's API page.
 2. If it belongs to the stable surface, import it in `src/django_db_tenants/__init__.py` and list it in the module docstring there.
-3. Document it on the module's page in [API reference](api/index.md); for a new module, add a page `docs/development-guide/api/<module>.md` with a `::: django_db_tenants.<module>` block, an entry to `nav` in `zensical.toml`, and a row in the module table of the API reference.
+3. Document it on the module's page in [API reference](api/index.md); for a new module, add a page `docs/development-guide/api/<module>.md` with a `::: django_db_tenants.<module>` block, an entry to `nav` in `zensical.toml` (the `zensical-nav` hook fails without it), and a row in the module table of the API reference.
 
 ## Keep the docs in sync
 

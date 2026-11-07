@@ -106,6 +106,7 @@ See [Testing strategy](testing.md) for how they fit together.
 | `.github/workflows/docs.yml` | GitHub Actions: builds this site from `develop` and publishes it on GitHub Pages ([Publish the documentation](ci-cd.md#publish-the-documentation)) |
 | `.pre-commit-config.yaml` | Git hooks |
 | `zensical.toml` | This site: theme, Markdown extensions, mkdocstrings options |
+| `tools/check_zensical_nav.py` | Pre-commit hook: every docs page is in the `nav` of `zensical.toml` |
 | `docker-compose.yml` | PostgreSQL and MySQL for the server test backends |
 | `.env.example`, `.envrc.example` | Templates for the local environment files |
 | `.editorconfig` | Indentation, line endings, final newline |
