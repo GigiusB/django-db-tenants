@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+  {% if tenant %}
+    <h1>Welcome to {{ tenant.name }}</h1>
+    <p>This page was served from the <code>{{ tenant.alias }}</code> database.</p>
+    <p><a href="{% url 'notes:list' %}">Your notes</a></p>
+  {% else %}
+    <h1>Control plane</h1>
+    <p>No tenant is active on this host. Manage clients in the <a href="{% url 'admin:index' %}">admin</a>.</p>
+  {% endif %}
+{% endblock %}

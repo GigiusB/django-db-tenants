@@ -1,0 +1,14 @@
+[run]
+source = ["django_db_tenants"]
+branch = true
+
+[paths]
+source = ["src/django_db_tenants", "*/site-packages/django_db_tenants"]
+
+[report]
+show_missing = true
+skip_covered = true
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]

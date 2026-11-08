@@ -1,0 +1,98 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-db-tenants"
+version = "0.2.0"
+description = "Database-per-client multi-tenancy for Django with runtime database registration."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "PolyForm-Noncommercial-1.0.0"
+license-files = ["LICENSE.md"]
+authors = [{ name = "Giovanni Bronzini", email = "g.bronzini@gmail.com" }]
+keywords = ["django", "multi-tenant", "database-router"]
+classifiers = [
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0",
+    "Framework :: Django :: 6.1",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Typing :: Typed",
+]
+dependencies = [
+    "Django>=4.2",
+    "cryptography>=41",
+    "django-strategy-field>=3.2",
+]
+
+[project.optional-dependencies]
+postgres = ["psycopg[binary]>=3.1"]
+mysql = ["mysqlclient>=2.2"]
+
+[project.urls]
+Homepage = "https://github.com/GigiusB/django-db-tenants"
+Repository = "https://github.com/GigiusB/django-db-tenants"
+
+# PEP 735 dependency groups. `uv sync` installs the `dev` group by default;
+# tox (see tox.ini) only installs `test` (plus the Django version and database driver under test).
+[dependency-groups]
+test = [
+    "pytest>=9",
+    "pytest-django>=4.11",
+    "pytest-cov>=6",
+    "factory-boy>=3.3",
+    "freezegun>=1.5",
+]
+lint = [
+    "ruff>=0.15",
+    "ty>=0.0.90",
+    "django-stubs>=5.2",
+    "pre-commit>=4",
+]
+# Drivers for running pytest directly with TEST_DB=pg|mysql (mysqlclient builds against libmysqlclient).
+db = [
+    "psycopg[binary]>=3.1",
+    "mysqlclient>=2.2",
+]
+# Developer's guide in docs/ (zensical.toml): `uv run zensical serve`.
+docs = [
+    "zensical>=0.0.74",
+    "mkdocstrings[python]>=0.29",  # the API pages; Zensical runs it as a Markdown extension
+    "ruff>=0.15",  # mkdocstrings formats the API signatures with it
+]
+# Versioning and changelog from Conventional Commits (see RELEASE.md).
+release = [
+    "commitizen>=4.19",
+]
+dev = [
+    { include-group = "test" },
+    { include-group = "lint" },
+    { include-group = "db" },
+    { include-group = "docs" },
+    { include-group = "release" },
+    "tox>=4.30",
+    "tox-uv>=1.28",
+]
+
+# `cz bump` (see RELEASE.md): the next version from the commits since the last tag.
+[tool.commitizen]
+name = "cz_conventional_commits"
+version_provider = "uv"  # project.version and the project's entry in uv.lock
+version_files = ["src/django_db_tenants/__init__.py:__version__"]
+tag_format = "v$version"
+annotated_tag = true  # `git push --follow-tags` pushes only annotated tags
+update_changelog_on_bump = true
+major_version_zero = true  # while 0.x, a breaking change bumps the minor version
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["django_db_tenants*"]
+
+[tool.setuptools.package-data]
+django_db_tenants = ["py.typed"]

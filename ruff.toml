@@ -1,0 +1,34 @@
+line-length = 120
+target-version = "py311"
+src = ["src", "tests/_extra", "tests/demo"]
+
+[lint]
+select = [
+    "E", "W",  # pycodestyle
+    "F",       # pyflakes
+    "I",       # isort
+    "B",       # bugbear
+    "UP",      # pyupgrade
+    "DJ",      # flake8-django
+    "BLE",     # blind except
+    "C4",      # comprehensions
+    "PIE",
+    "PT",      # pytest style
+    "SIM",
+    "RET",
+    "T20",     # print()
+    "RUF",
+    "S",       # bandit
+]
+ignore = [
+    "RUF012",  # mutable class attrs: Django Meta/ModelAdmin idioms
+]
+
+[lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "S108"]
+"tests/_extra/testutils/settings.py" = ["F403", "F405"]
+"tests/demo/**" = ["S105"]
+"**/migrations/**" = ["E501", "RUF"]
+
+[lint.isort]
+known-first-party = ["django_db_tenants", "testutils", "demo", "notes"]

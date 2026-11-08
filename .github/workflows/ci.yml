@@ -1,0 +1,149 @@
+# Build and test: the same tox environments as `uv run tox -p auto` locally (see tox.ini).
+#
+#   lint, type, docs   one job each
+#   build              sdist + wheel, smoke-tested and uploaded as an artifact
+#   test-*             the Python x Django matrix, once per database backend
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_COLOR: "1"
+  # tox and tox-uv versions required by tox.ini
+  TOX: uvx --with tox-uv>=1.28 --from tox>=4.30 tox
+
+jobs:
+  checks:
+    name: ${{ matrix.env }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [lint, type, docs]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
+      # The `ty` pre-commit hook runs `uv run`, which installs the dev group, mysqlclient included.
+      - name: Install MySQL client headers
+        if: matrix.env == 'lint'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libmysqlclient-dev pkg-config
+      - name: Cache pre-commit environments
+        if: matrix.env == 'lint'
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
+      - run: $TOX -e ${{ matrix.env }}
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
+      - run: uv build
+      - name: Import the wheel in a clean environment
+        run: >-
+          uv run --isolated --no-project --with dist/*.whl
+          python -c "import django_db_tenants; print(django_db_tenants.__version__)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
+  test-sqlite:
+    name: ${{ matrix.env }}-sqlite
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [py311-dj42, py312-dj42, py311-dj52, py315-dj52, py312-dj60, py315-dj60, py312-dj61, py315-dj61]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
+      - run: $TOX -e ${{ matrix.env }}-sqlite
+
+  test-postgres:
+    name: ${{ matrix.env }}-pg
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [py311-dj42, py312-dj42, py311-dj52, py315-dj52, py312-dj60, py315-dj60, py312-dj61, py315-dj61]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: tenants
+          POSTGRES_PASSWORD: tenants
+          POSTGRES_DB: django_db_tenants
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U tenants -d django_db_tenants"
+          --health-interval 2s --health-timeout 5s --health-retries 30
+    env:
+      TEST_PG_HOST: 127.0.0.1
+      TEST_PG_PORT: "5432"
+      TEST_PG_USER: tenants
+      TEST_PG_PASSWORD: tenants
+      TEST_PG_NAME: django_db_tenants
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
+      - run: $TOX -e ${{ matrix.env }}-pg
+
+  test-mysql:
+    name: ${{ matrix.env }}-mysql
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [py311-dj42, py312-dj42, py311-dj52, py315-dj52, py312-dj60, py315-dj60, py312-dj61, py315-dj61]
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          # Tests run as root: every tenant database is created and dropped on the fly.
+          MYSQL_ROOT_PASSWORD: tenants
+          MYSQL_DATABASE: django_db_tenants
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -uroot -ptenants"
+          --health-interval 2s --health-timeout 5s --health-retries 30
+    env:
+      TEST_MYSQL_HOST: 127.0.0.1
+      TEST_MYSQL_PORT: "3306"
+      TEST_MYSQL_USER: root
+      TEST_MYSQL_PASSWORD: tenants
+      TEST_MYSQL_NAME: django_db_tenants
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
+      # mysqlclient has no Linux wheels: it is compiled against the client headers.
+      - name: Install MySQL client headers
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libmysqlclient-dev pkg-config
+      - run: $TOX -e ${{ matrix.env }}-mysql
+
+  # One required check for branch protection, whatever the matrix contains.
+  ci-ok:
+    name: CI passed
+    if: always()
+    needs: [checks, build, test-sqlite, test-postgres, test-mysql]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if any job failed or was cancelled
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1

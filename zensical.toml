@@ -1,0 +1,115 @@
+# Developer's guide, built with Zensical: `uv run zensical serve` / `uv run zensical build --strict`.
+# Pages link each other with relative file links (`../api/settings.md#reference`), which the
+# build validates: a missing page or anchor fails `--strict`.
+
+[project]
+site_name = "django-db-tenants"
+site_description = "Developer's guide for django-db-tenants, database-per-client multi-tenancy for Django."
+site_url = "https://gigiusb.github.io/django-db-tenants/"
+repo_url = "https://github.com/GigiusB/django-db-tenants"
+repo_name = "GigiusB/django-db-tenants"
+edit_uri = "edit/develop/docs/"  # the published site is built from develop
+docs_dir = "docs"
+site_dir = "site"
+# `zensical serve` also rebuilds when docstrings change (the API pages are generated from them).
+watch = ["src"]
+
+# Reading order of the guide (the map in development-guide/index.md). A section's first entry
+# without a title is its index page (theme feature navigation.indexes); the other titles repeat
+# each page's heading. Add new pages here: the zensical-nav pre-commit hook fails otherwise.
+nav = [
+  { "Home" = "index.md" },
+  { "Development guide" = [
+    "development-guide/index.md",
+    { "Quick start" = "development-guide/quick-start.md" },
+    { "Local environment setup" = "development-guide/local-setup.md" },
+    { "Codebase structure" = "development-guide/codebase-structure.md" },
+    { "Design overview" = "development-guide/design-overview.md" },
+    { "Architecture" = "development-guide/architecture.md" },
+    { "Model reference" = [
+      "development-guide/models/index.md",
+      { "Client" = "development-guide/models/client.md" },
+      { "ClientDomain" = "development-guide/models/client-domain.md" },
+    ] },
+    { "CLI reference" = [
+      "development-guide/cli/index.md",
+      { "provision_tenant" = "development-guide/cli/provision-tenant.md" },
+      { "migrate_tenants" = "development-guide/cli/migrate-tenants.md" },
+      { "tenant_shell" = "development-guide/cli/tenant-shell.md" },
+    ] },
+    { "API reference" = [
+      "development-guide/api/index.md",
+      { "Settings" = "development-guide/api/settings.md" },
+      { "Context" = "development-guide/api/context.md" },
+      { "Middleware" = "development-guide/api/middleware.md" },
+      { "Resolvers" = "development-guide/api/resolvers.md" },
+      { "Router" = "development-guide/api/router.md" },
+      { "Database registration" = "development-guide/api/db.md" },
+      { "Database strategies" = "development-guide/api/strategies.md" },
+      { "Registry" = "development-guide/api/registry.md" },
+      { "Provisioning" = "development-guide/api/provisioning.md" },
+      { "Background tasks" = "development-guide/api/tasks.md" },
+      { "Cache isolation" = "development-guide/api/cache.md" },
+      { "Encryption" = "development-guide/api/encryption.md" },
+      { "Admin" = "development-guide/api/admin.md" },
+      { "Exceptions" = "development-guide/api/exceptions.md" },
+    ] },
+    { "Testing strategy" = "development-guide/testing.md" },
+    { "Git workflow" = "development-guide/git-workflow.md" },
+    { "CI/CD and build" = "development-guide/ci-cd.md" },
+    { "Contribution guidelines" = "development-guide/contributing.md" },
+  ] },
+  { "Glossary" = "glossary.md" },
+]
+
+[project.theme]
+features = [
+  "content.code.copy",
+  "navigation.indexes",
+  "navigation.sections",
+  "navigation.top",
+  "search.highlight",
+]
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to light mode"
+
+[project.markdown_extensions]
+admonition = {}
+attr_list = {}
+def_list = {}
+tables = {}
+toc.permalink = true
+pymdownx.details = {}
+pymdownx.highlight = {}
+pymdownx.inlinehilite = {}
+pymdownx.superfences.custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
+
+# API reference pages: `::: django_db_tenants.<module>` blocks, read statically from src/.
+[project.plugins.mkdocstrings]
+default_handler = "python"
+
+[project.plugins.mkdocstrings.handlers.python]
+paths = ["src"]
+
+[project.plugins.mkdocstrings.handlers.python.options]
+show_root_heading = true
+show_root_full_path = true
+show_source = false
+show_if_no_docstring = true
+show_signature_annotations = true
+separate_signature = true
+members_order = "source"
+filters = ["!^_", "!^log$"]
+heading_level = 2

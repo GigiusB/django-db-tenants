@@ -1,0 +1,28 @@
+.*
+~*
+!.gitignore
+!.*.example
+
+# Dotfiles that belong in the repository
+!.coveragerc.toml
+!.editorconfig
+!.github/
+!.pre-commit-config.yaml
+!.python-version
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Coverage reports
+coverage.xml
+htmlcov/
+
+# Built documentation (zensical build; its cache, .cache/, is ignored with the other dotfiles)
+site/
+
+# Demo project runtime data (SQLite databases)
+tests/demo/var/

@@ -1,0 +1,52 @@
+# Build the developer's guide (Zensical, strict) and publish it on GitHub Pages.
+#
+# Runs only for the develop branch: on every push to it, or on demand
+# (Actions > Docs > Run workflow, with develop selected).
+#
+# One-time repository setup:
+#   Settings > Pages > Build and deployment > Source: GitHub Actions
+#   Settings > Environments > github-pages > Deployment branches: allow develop
+name: Docs
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deployment at a time; a newer push waits instead of cancelling a deployment in progress.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # workflow_dispatch can target any branch: publish from develop only.
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: "1"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
+      - uses: actions/configure-pages@v5
+      # Only the docs group: mkdocstrings reads src/ statically, the project is not installed.
+      - run: uv run --frozen --only-group docs zensical build --strict --clean
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

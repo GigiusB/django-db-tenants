@@ -1,0 +1,45 @@
+# Create the GitHub release of a version tag pushed by a maintainer (see RELEASE.md).
+#
+# The tag is created on develop by `cz bump` and pushed only after develop is merged into main:
+# the workflow refuses a tag that is not in main's history or that does not match the package version.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write  # gh release create
+
+env:
+  FORCE_COLOR: "1"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0  # main's history, for the ancestry check
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
+      - name: Check the tag is in main and matches the package version
+        run: |
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main \
+            || { echo "::error::$GITHUB_REF_NAME is not in main's history: merge develop into main first"; exit 1; }
+          test "v$(uv version --short)" = "$GITHUB_REF_NAME" \
+            || { echo "::error::$GITHUB_REF_NAME does not match version $(uv version --short) in pyproject.toml"; exit 1; }
+      - run: uv build
+      - name: Import the wheel in a clean environment
+        run: >-
+          uv run --isolated --no-project --with dist/*.whl
+          python -c "import django_db_tenants; print(django_db_tenants.__version__)"
+      # The section `cz bump` wrote for this version, without its heading. v0.1.0 predates
+      # CHANGELOG.md: without a section, GitHub generates the notes from the merged pull requests.
+      - name: Release notes from CHANGELOG.md
+        run: awk -v tag="$GITHUB_REF_NAME" '/^## /{p = ($2 == tag); next} p' CHANGELOG.md > release-notes.md || true
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -s release-notes.md ]; then notes=(--notes-file release-notes.md); else notes=(--generate-notes); fi
+          gh release create "$GITHUB_REF_NAME" dist/* --title "$GITHUB_REF_NAME" "${notes[@]}"

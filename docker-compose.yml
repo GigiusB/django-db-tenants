@@ -1,0 +1,44 @@
+# Optional database servers for the PostgreSQL / MySQL test environments.
+#
+#   docker compose up -d --wait
+#   cp .env.example .env        # its defaults match the services below
+#   tox -e py313-dj52-pg,py313-dj52-mysql
+#
+# Ports are published on localhost only, on 55432 / 53306 so they do not clash
+# with servers already on the default ports. Data lives in tmpfs and is gone
+# when a container stops.
+
+name: django-db-tenants
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: tenants
+      POSTGRES_PASSWORD: tenants
+      POSTGRES_DB: django_db_tenants
+    ports:
+      - "127.0.0.1:55432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tenants -d django_db_tenants"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      # Tests run as root: every tenant database is created and dropped on the fly.
+      MYSQL_ROOT_PASSWORD: tenants
+      MYSQL_DATABASE: django_db_tenants
+    ports:
+      - "127.0.0.1:53306:3306"
+    tmpfs:
+      - /var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-ptenants"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
