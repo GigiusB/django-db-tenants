@@ -101,7 +101,7 @@ See [Testing strategy](testing.md) for how they fit together.
 | `.github/workflows/ci.yml` | GitHub Actions: every tox environment, the package build ([CI/CD and build](ci-cd.md#github-actions)) |
 | `.github/workflows/docs.yml` | GitHub Actions: builds this site from `develop` and publishes it on GitHub Pages ([Publish the documentation](ci-cd.md#publish-the-documentation)) |
 | `.github/workflows/cla.yml` | GitHub Actions: the Contributor License Agreement check on pull requests (`CLA.md`), signatures stored on the `cla-signatures` branch |
-| `.github/workflows/release.yml` | GitHub Actions: the GitHub release of a pushed `v*` tag (see `RELEASE.md`) |
+| `.github/workflows/release.yml` | GitHub Actions: PyPI upload and GitHub release of a pushed `v*` tag (see `RELEASE.md`) |
 | `.pre-commit-config.yaml` | Git hooks, on `pre-commit` and `commit-msg` |
 | `zensical.toml` | This site: navigation, theme, Markdown extensions, mkdocstrings options |
 | `tools/check_zensical_nav.py` | Pre-commit hook: every docs page is in the `nav` of `zensical.toml` |

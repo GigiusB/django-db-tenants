@@ -104,7 +104,7 @@ The "edit this page" links of the published site (`edit_uri`) point to `docs/` o
 
 ## Releases
 
-Maintainers must follow the release process described in [`RELEASE.md`](https://github.com/GigiusB/django-db-tenants/blob/develop/RELEASE.md), at the root of the repository. It includes the **Release** workflow (`.github/workflows/release.yml`), which creates the GitHub release of a pushed version tag.
+Maintainers must follow the release process described in [`RELEASE.md`](https://github.com/GigiusB/django-db-tenants/blob/develop/RELEASE.md), at the root of the repository. It includes the **Release** workflow (`.github/workflows/release.yml`), which publishes a pushed version tag to PyPI and creates its GitHub release.
 
 ## Next steps
 
