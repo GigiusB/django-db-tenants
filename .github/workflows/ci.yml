@@ -33,7 +33,7 @@ jobs:
         env: [lint, type, docs]
     steps:
       - uses: actions/checkout@v5
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
       # The `ty` pre-commit hook runs `uv run`, which installs the dev group, mysqlclient included.
       - name: Install MySQL client headers
         if: matrix.env == 'lint'
@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
       - run: uv build
       - name: Import the wheel in a clean environment
         run: >-
@@ -71,7 +71,7 @@ jobs:
         env: [py311-dj42, py312-dj42, py311-dj52, py315-dj52, py312-dj60, py315-dj60, py312-dj61, py315-dj61]
     steps:
       - uses: actions/checkout@v5
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
       - run: $TOX -e ${{ matrix.env }}-sqlite
 
   test-postgres:
@@ -101,7 +101,7 @@ jobs:
       TEST_PG_NAME: django_db_tenants
     steps:
       - uses: actions/checkout@v5
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
       - run: $TOX -e ${{ matrix.env }}-pg
 
   test-mysql:
@@ -131,7 +131,7 @@ jobs:
       TEST_MYSQL_NAME: django_db_tenants
     steps:
       - uses: actions/checkout@v5
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
       # mysqlclient has no Linux wheels: it is compiled against the client headers.
       - name: Install MySQL client headers
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libmysqlclient-dev pkg-config

@@ -1,6 +1,8 @@
 # Install once with:  uv run pre-commit install
 # Run on everything:  uv run pre-commit run --all-files   (or: uv run tox -e lint)
 default_install_hook_types: [pre-commit, commit-msg]
+# Hooks without `stages` would also run at commit-msg; commitizen declares its own stage.
+default_stages: [pre-commit]
 default_language_version:
   python: python3
 exclude: ^tests/demo/var/
