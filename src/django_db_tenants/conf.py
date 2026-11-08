@@ -47,22 +47,19 @@ DEFAULTS = {
 
 
 class AppSettings:
-    """The keys of ``DB_TENANTS`` (or of its ``section`` sub-dict), falling back to ``defaults``.
+    """The keys of ``DB_TENANTS``, falling back to ``defaults``.
 
     Values of ``import_strings`` keys given as dotted paths are imported.
     """
 
-    def __init__(self, defaults: dict, import_strings: frozenset[str] = frozenset(), section: str = "") -> None:
+    def __init__(self, defaults: dict, import_strings: frozenset[str] = frozenset()) -> None:
         self._defaults = defaults
         self._import_strings = import_strings
-        self._section = section
 
     def __getattr__(self, name):
         if name.startswith("_") or name not in self._defaults:
             raise AttributeError(name)
         user_settings = getattr(settings, "DB_TENANTS", {}) or {}
-        if self._section:
-            user_settings = user_settings.get(self._section) or {}
         value = user_settings.get(name, self._defaults[name])
         if name in self._import_strings and isinstance(value, str):
             value = import_string(value)

@@ -6,7 +6,7 @@ Database-per-client multi-tenancy for Django.
 
 * One **shared** database holds the client registry. Every client gets its **own database** with its own `auth` users, sessions and application tables.
 * Tenant databases are registered in `django.db.connections` **at runtime**, so adding, suspending or re-pointing a client never requires a restart.
-* How a client's database is reached is decided by its **database strategy**, configured by encrypted per-client parameters. Write your own, or use the optional `OidcStrategy` for per-tenant OpenID Connect single sign-on.
+* How a client's database is reached is decided by its **database strategy**, configured by encrypted per-client parameters. The built-in one derives tenant connections from the shared database's settings; write your own for anything else.
 
 **Documentation:** the developer's guide is at <https://gigiusb.github.io/django-db-tenants/> (sources in [`docs/`](docs/)).
 
@@ -14,7 +14,7 @@ Database-per-client multi-tenancy for Django.
 
 ```bash
 pip install django-db-tenants
-pip install "django-db-tenants[postgres]"  # extras: postgres, mysql, oidc
+pip install "django-db-tenants[postgres]"  # extras: postgres, mysql
 ```
 
 Requires Python 3.11+ and Django 4.2, 5.2, 6.0 or 6.1.
@@ -83,7 +83,7 @@ def send_invoices(tenant): ...  # background jobs: pass the slug or the Client
 python manage.py migrate_tenants  # migrate every active tenant database
 ```
 
-Users are ordinary Django users in each tenant database, so any Django authentication works. For per-tenant OpenID Connect SSO, install the `oidc` extra and see the [OIDC strategy](https://gigiusb.github.io/django-db-tenants/development-guide/api/oidc/).
+Users are ordinary Django users in each tenant database, so any Django authentication works.
 
 Next: the [architecture](https://gigiusb.github.io/django-db-tenants/development-guide/architecture/), [database strategies](https://gigiusb.github.io/django-db-tenants/development-guide/api/strategies/), [settings](https://gigiusb.github.io/django-db-tenants/development-guide/api/settings/) and [cache isolation](https://gigiusb.github.io/django-db-tenants/development-guide/api/cache/). The demo project in [`tests/demo`](tests/demo/README.md) shows a complete setup.
 

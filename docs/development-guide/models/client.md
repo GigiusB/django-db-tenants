@@ -47,7 +47,7 @@ With the default `TemplateOverlay` strategy, `db_params` keys are `DATABASES` ke
 {"HOST": "db2.internal", "USER": "acme", "PASSWORD": "s3cret", "OPTIONS": {"sslmode": "require"}}
 ```
 
-Other strategies define other keys: the optional [`OidcStrategy`](../api/oidc.md) adds an `SSO` object with the tenant's OpenID Connect provider.
+Other strategies define other keys.
 
 ### Timestamps
 
@@ -62,8 +62,8 @@ Other strategies define other keys: the optional [`OidcStrategy`](../api/oidc.md
 |---|---|---|
 | `alias` | `str` | The database alias: the slug |
 | `is_active` | `bool` | `status == "active"` |
-| `get_db_strategy()` | `DatabaseStrategy` | `db_strategy`, or `ImproperlyConfigured` when the stored class cannot be imported |
-| `config_version()` | `str` | `updated_at` in ISO format; a new value makes each process re-register the connection (and `OidcStrategy`'s OIDC client) |
+| `get_db_strategy()` | `DbConnectionFactory` | `db_strategy`, or `ImproperlyConfigured` when the stored class cannot be imported |
+| `config_version()` | `str` | `updated_at` in ISO format; a new value makes each process re-register the connection |
 | `clean()` | | Rejects reserved slugs and `db_params` the strategy refuses (`validate()`) |
 
 Default ordering: `name`. `str(client)` is `"<name> (<slug>)"`.

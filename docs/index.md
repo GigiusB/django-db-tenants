@@ -1,6 +1,6 @@
 # django-db-tenants
 
-Database-per-client multi-tenancy for Django, with tenant databases registered at runtime and optional per-tenant OpenID Connect single sign-on.
+Database-per-client multi-tenancy for Django, with tenant databases registered at runtime.
 
 This site is the **developer's guide**. It is for:
 
@@ -12,7 +12,6 @@ This site is the **developer's guide**. It is for:
 - One **shared database** holds the client registry. Every client (the [tenant](glossary.md#tenant)) gets its **own database**, with its own `auth` users, sessions and application tables.
 - Tenant databases are added to `django.db.connections` **while the process runs**, so adding, suspending or re-pointing a client never needs a restart.
 - How each client's database is reached, created and dropped is **pluggable**: a [database strategy](glossary.md#database-strategy) per client, configured by encrypted parameters. The built-in one derives tenant connections from the shared database's settings.
-- Each client can sign its users in through its own **OpenID Connect** identity provider (Entra ID, Okta, Keycloak, Google and others), configured as data on the client row.
 
 ## Where to start
 
@@ -20,6 +19,7 @@ This site is the **developer's guide**. It is for:
 |---|---|
 | Get from a fresh clone to passing tests and a running demo | [Quick start](development-guide/quick-start.md) |
 | Set up a full workstation (PostgreSQL, MySQL, IDE, docs) | [Local environment setup](development-guide/local-setup.md) |
+| Understand the design behind the multi-tenancy | [Design overview](development-guide/design-overview.md) |
 | Understand how a request reaches the right database | [Architecture](development-guide/architecture.md) |
 | Look up a model, a command, a setting or a function | [Model reference](development-guide/models/index.md), [CLI reference](development-guide/cli/index.md), [API reference](development-guide/api/index.md) |
 | Send a change | [Contribution guidelines](development-guide/contributing.md) |

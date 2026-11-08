@@ -22,7 +22,7 @@ This installs the library in editable mode and the `dev` dependency group, which
 
 | Group | Contents | Used by |
 |---|---|---|
-| `test` | pytest, pytest-django, pytest-cov, factory-boy, freezegun, plus Authlib and requests (the `oidc` extra) | `pytest`, every tox test environment |
+| `test` | pytest, pytest-django, pytest-cov, factory-boy, freezegun | `pytest`, every tox test environment |
 | `lint` | ruff, ty, django-stubs, pre-commit | `tox -e lint`, `tox -e type`, the git hooks |
 | `db` | psycopg, mysqlclient | plain `pytest` runs with `TEST_DB=pg` or `TEST_DB=mysql` |
 | `docs` | zensical, mkdocstrings, ruff (mkdocstrings formats the API signatures with it) | `zensical serve`, `tox -e docs` |

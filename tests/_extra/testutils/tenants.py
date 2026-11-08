@@ -32,7 +32,6 @@ from django.db.backends.utils import CursorWrapper
 from django_db_tenants import crypto, db, tenant_context
 from django_db_tenants.conf import app_settings
 from django_db_tenants.models import Client
-from django_db_tenants.oidc import client as oidc
 from django_db_tenants.provisioning import migrate_tenant
 
 TEMPLATE_ALIAS = "test_template"
@@ -138,15 +137,12 @@ def reset_tenant_state() -> None:
     * runtime-registered connection aliases (and their open connections)
     * cached host/slug -> Client lookups
     * the cached Fernet instance (so ``settings`` overrides of the key apply)
-    * per-tenant OIDC clients
     """
     for alias in registered_tenant_aliases():
         db.unregister_db(alias)
     for cache in caches.all():
         cache.clear()
     crypto.get_fernet.cache_clear()
-    oidc._versions.clear()
-    oidc._oauth = None
 
 
 def tenant_login(http_client: Any, tenant: Client, user: Any) -> None:

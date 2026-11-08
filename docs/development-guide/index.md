@@ -9,6 +9,7 @@ This guide is for engineers who work on django-db-tenants itself, and for develo
 | [Quick start](quick-start.md) | Clone, install, run the tests and the demo project in a few minutes |
 | [Local environment setup](local-setup.md) | Toolchain, database servers, environment files, IDE settings |
 | [Codebase structure](codebase-structure.md) | What each module and configuration file is for |
+| [Design overview](design-overview.md) | The five pieces that make multi-tenancy work, and the trade-offs the design accepts |
 | [Architecture](architecture.md) | How a request, a task or a command reaches the right database |
 | [Model reference](models/index.md) | The data model, with an editable diagram, and one page per model |
 | [CLI reference](cli/index.md) | Every management command and option |

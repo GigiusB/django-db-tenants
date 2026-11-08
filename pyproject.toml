@@ -5,12 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "django-db-tenants"
 version = "0.1.0"
-description = "Database-per-client multi-tenancy for Django with runtime database registration and optional per-tenant OIDC single sign-on."
+description = "Database-per-client multi-tenancy for Django with runtime database registration."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 authors = [{ name = "Giovanni Bronzini", email = "g.bronzini@gmail.com" }]
-keywords = ["django", "multi-tenant", "database-router", "sso", "oidc"]
+keywords = ["django", "multi-tenant", "database-router"]
 classifiers = [
     "Framework :: Django",
     "Framework :: Django :: 4.2",
@@ -31,8 +31,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# django_db_tenants.oidc: OidcStrategy's login views. requests is required by authlib.integrations.django_client.
-oidc = ["Authlib>=1.3", "requests>=2.28"]
 postgres = ["psycopg[binary]>=3.1"]
 mysql = ["mysqlclient>=2.2"]
 
@@ -49,9 +47,6 @@ test = [
     "pytest-cov>=6",
     "factory-boy>=3.3",
     "freezegun>=1.5",
-    # the oidc extra, for the OidcStrategy tests
-    "Authlib>=1.3",
-    "requests>=2.28",
 ]
 lint = [
     "ruff>=0.15",
@@ -70,14 +65,29 @@ docs = [
     "mkdocstrings[python]>=0.29",  # the API pages; Zensical runs it as a Markdown extension
     "ruff>=0.15",  # mkdocstrings formats the API signatures with it
 ]
+# Versioning and changelog from Conventional Commits (see RELEASE.md).
+release = [
+    "commitizen>=4.19",
+]
 dev = [
     { include-group = "test" },
     { include-group = "lint" },
     { include-group = "db" },
     { include-group = "docs" },
+    { include-group = "release" },
     "tox>=4.30",
     "tox-uv>=1.28",
 ]
+
+# `cz bump` (see RELEASE.md): the next version from the commits since the last tag.
+[tool.commitizen]
+name = "cz_conventional_commits"
+version_provider = "uv"  # project.version and the project's entry in uv.lock
+version_files = ["src/django_db_tenants/__init__.py:__version__"]
+tag_format = "v$version"
+annotated_tag = true  # `git push --follow-tags` pushes only annotated tags
+update_changelog_on_bump = true
+major_version_zero = true  # while 0.x, a breaking change bumps the minor version
 
 [tool.setuptools.packages.find]
 where = ["src"]

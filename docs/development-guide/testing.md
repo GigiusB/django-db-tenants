@@ -15,7 +15,7 @@ TL;DR: tests use real tenant databases, not mocks. Each tenant in a test gets a 
 | `uv run tox -p auto` | the whole matrix plus `lint`, `type` and `docs`, in parallel |
 | `uv run tox -e py313-dj52-pg` | one environment: `<python>-<django>-<sqlite|pg|mysql>` |
 
-tox environments run `pytest --cov --cov-report=term` by default; pass other pytest arguments after `--`: `uv run tox -e py313-dj52-sqlite -- -k oidc`.
+tox environments run `pytest --cov --cov-report=term` by default; pass other pytest arguments after `--`: `uv run tox -e py313-dj52-sqlite -- -k strategy`.
 
 ## The matrix
 
@@ -54,7 +54,6 @@ Each server environment creates `test_<NAME>_<tox env>` so parallel runs against
 | `test_strategies.py` | the strategy field and registry, `TemplateOverlay` settings, custom strategies, missing strategy classes, the admin form |
 | `test_provisioning.py` | `provision()`, `drop_database()`, unsupported vendors, the `provision_tenant` (strategy and params options, bad input) and `migrate_tenants` commands |
 | `test_tasks.py` | `with_tenant`, `for_each_tenant` |
-| `test_oidc.py` | `OidcStrategy` validation, configuration and connection, `provision_tenant` with it, the views (only for `OidcStrategy` clients), safe redirects, IdP errors, user sync refusal, RP-initiated logout, OIDC client registration |
 | `test_demo.py` | end-to-end checks of the demo project: pages, logins, notes, tasks, `notes_report`, `seed_demo` |
 | `test_migrations.py` | no missing migrations |
 
@@ -71,7 +70,7 @@ Shared helpers live in `tests/_extra/testutils` (importable as `testutils`); fix
 
 Two fixtures run automatically:
 
-- `_reset_tenant_state` calls `reset_tenant_state()` before and after each test: it unregisters the tenant aliases, clears every cache, the cached Fernet key and the OIDC clients.
+- `_reset_tenant_state` calls `reset_tenant_state()` before and after each test: it unregisters the tenant aliases, clears every cache and the cached Fernet key.
 - `_allow_tenant_connections` lets tests that use the database open connections to tenant aliases. Django 6.1 refuses connections to aliases not declared in `TestCase.databases`; tenant aliases are registered after that check, so the fixture lets through exactly the aliases created by `ensure_db_registered`.
 
 The test settings (`testutils.settings`) add a control host, `control.test`, a fixed `ENCRYPTION_KEY`, and register `testutils.strategies.EnvironmentPassword` through `DATABASE_STRATEGIES`. Custom strategies used in tests must live in an importable module such as `testutils.strategies`, not in a test file: the field stores their dotted path.
@@ -112,9 +111,8 @@ Guidelines:
 - **Create tenant-app objects inside `tenant_context()`.** Factories for users and notes write wherever the router points. `ClientFactory` and `ClientDomainFactory` always write to the shared database.
 - **Choose the tenant with the host.** Pass `HTTP_HOST="<slug>.test"` to the test client; `control.test` is the control host.
 - **Log in on a tenant** with `testutils.tenants.tenant_login(client, acme, user)`: the session must be stored in the tenant database.
-- **Use the factories' explicit methods** (`.create()`, `.build()`, `.create_batch()`): they are typed. `ClientFactory` has the traits `provisioning`, `suspended` and `sso` (an `OidcStrategy` client with a provider; `sso_params()` builds its `db_params`), for example `ClientFactory.create(suspended=True)`.
+- **Use the factories' explicit methods** (`.create()`, `.build()`, `.create_batch()`): they are typed. `ClientFactory` has the traits `provisioning` and `suspended`, for example `ClientFactory.create(suspended=True)`.
 - **Freeze time** with `freezegun` for anything time-based: cache TTLs, `updated_at`-driven re-registration.
-- **OIDC without an IdP:** replace `get_oidc_client` with `testutils.oidc.FakeOIDCClient`, which returns the claims you give it.
 - Tests that need SQLite files (the demo's seeding) are skipped on other backends with `skipif(selected_backend() != "sqlite")`.
 
 ## Coverage

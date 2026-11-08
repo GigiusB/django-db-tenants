@@ -24,7 +24,7 @@ docs/                         this site (Zensical)
 | `resolvers.py` | `resolve_by_host`, `resolve_by_header` | [Resolvers](api/resolvers.md) |
 | `router.py` | `TenantRouter`: shared apps to the shared database, the rest to the active tenant | [Router](api/router.md) |
 | `db.py` | [Runtime registration](../glossary.md#runtime-registration) of tenant connections | [Database registration](api/db.md) |
-| `strategies.py` | [Database strategies](../glossary.md#database-strategy): `DatabaseStrategy`, the built-in `TemplateOverlay` (connection settings, create and drop per backend), the strategy `registry` | [Database strategies](api/strategies.md) |
+| `strategies.py` | [Database strategies](../glossary.md#database-strategy): the `DbConnectionFactory` protocol, `DatabaseStrategy`, the built-in `TemplateOverlay` (connection settings, create and drop per backend), the strategy `registry` | [Database strategies](api/strategies.md) |
 | `registry.py` | Cached `Client` lookups by host and by slug, cache invalidation | [Registry](api/registry.md) |
 | `signals.py` | Invalidates the registry cache and unregisters connections when `Client` / `ClientDomain` rows change | [Architecture](architecture.md#client-lookup-cache-and-invalidation) |
 | `models.py` | `Client`, `ClientDomain` | [Model reference](models/index.md) |
@@ -34,7 +34,6 @@ docs/                         this site (Zensical)
 | `cache.py` | `tenant_key_func`: per-tenant cache key namespaces | [Cache isolation](api/cache.md) |
 | `exceptions.py` | `TenantError`, `TenantNotFound`, `TenantInactive` | [Exceptions](api/exceptions.md) |
 | `admin.py` | `ClientAdmin` with the domain inline and the provisioning action | [Admin](api/admin.md) |
-| `oidc/` | Optional, used by nothing else in the package: `OidcStrategy` and `OidcConfig` (`strategy.py`), its settings (`conf.py`), Authlib clients (`client.py`), claims-to-user mapping (`sync.py`), views and URLs | [OIDC strategy](api/oidc.md) |
 | `management/commands/` | `provision_tenant`, `migrate_tenants`, `tenant_shell` | [CLI reference](cli/index.md) |
 | `migrations/` | Schema of `Client` and `ClientDomain` (shared database only) | |
 | `py.typed` | Marks the package as typed (PEP 561) | |
@@ -59,22 +58,19 @@ flowchart LR
     signals --> db
     models --> fields --> crypto
     registry --> cache
-    oidc -. optional .-> strategies
 ```
 
-Every module reads its settings through `conf.app_settings` (`oidc` through `oidc.conf.oidc_settings`, which reads `DB_TENANTS["OIDC"]`). No module imports `oidc`, so Authlib is only needed by projects that use `OidcStrategy`. `context.py` imports `db` and `registry` inside `tenant_context()` because `registry` imports the models, which must not load before the app registry is ready.
+Every module reads its settings through `conf.app_settings`. `context.py` imports `db` and `registry` inside `tenant_context()` because `registry` imports the models, which must not load before the app registry is ready.
 
 ## Test utilities: `tests/_extra/testutils`
 
 | Module | Contents |
 |---|---|
-| `settings.py` | Test settings: the demo's settings plus the selected database backend, a fast password hasher, a tenant-namespaced `LocMemCache`, a fixed `ENCRYPTION_KEY`, `CONTROL_HOSTS = ["control.test"]`, the `EnvironmentPassword` and `OidcStrategy` strategies |
-| `urls.py` | The demo's URLs plus the OIDC views under `oidc/` |
+| `settings.py` | Test settings: the demo's settings plus the selected database backend, a fast password hasher, a tenant-namespaced `LocMemCache`, a fixed `ENCRYPTION_KEY`, `CONTROL_HOSTS = ["control.test"]`, the `EnvironmentPassword` strategy |
 | `databases.py` | `TEST_DB` backend selection and `.env` loading |
 | `plugin.py` | pytest fixtures: `tenant_factory`, `acme`, `globex`, `tenant_db_name`, `tenant_template_db`, plus two autouse fixtures |
 | `tenants.py` | Creating, cloning and dropping tenant databases per backend; `reset_tenant_state()`, `tenant_login()` |
 | `factories.py` | factory_boy factories: `ClientFactory`, `ClientDomainFactory`, `UserFactory`, `NoteFactory` |
-| `oidc.py` | `FakeOIDCClient`, a stand-in for the Authlib client in OIDC view tests |
 | `strategies.py` | `EnvironmentPassword`, a custom database strategy registered by the test settings, and `Unregistered`, one that is not |
 
 See [Testing strategy](testing.md) for how they fit together.
@@ -95,7 +91,7 @@ See [Testing strategy](testing.md) for how they fit together.
 
 | File | Configures |
 |---|---|
-| `pyproject.toml` | Package metadata, runtime dependencies (Django, cryptography, django-strategy-field) and extras (`postgres`, `mysql`, `oidc`: Authlib and requests), dependency groups, setuptools package discovery |
+| `pyproject.toml` | Package metadata, runtime dependencies (Django, cryptography, django-strategy-field) and extras (`postgres`, `mysql`), dependency groups, setuptools package discovery, Commitizen (`[tool.commitizen]`) |
 | `uv.lock` | Locked versions of every dependency; kept current by the `uv-lock` hook |
 | `ruff.toml` | Lint rules and formatting (line length 120, target Python 3.11) |
 | `ty.toml` | Type checking: Python 3.11, extra import paths, per-file overrides |
@@ -104,7 +100,8 @@ See [Testing strategy](testing.md) for how they fit together.
 | `tox.ini` | The Python × Django × database matrix plus `lint`, `type` and `docs` |
 | `.github/workflows/ci.yml` | GitHub Actions: every tox environment, the package build ([CI/CD and build](ci-cd.md#github-actions)) |
 | `.github/workflows/docs.yml` | GitHub Actions: builds this site from `develop` and publishes it on GitHub Pages ([Publish the documentation](ci-cd.md#publish-the-documentation)) |
-| `.pre-commit-config.yaml` | Git hooks |
+| `.github/workflows/release.yml` | GitHub Actions: the GitHub release of a pushed `v*` tag (see `RELEASE.md`) |
+| `.pre-commit-config.yaml` | Git hooks, on `pre-commit` and `commit-msg` |
 | `zensical.toml` | This site: navigation, theme, Markdown extensions, mkdocstrings options |
 | `tools/check_zensical_nav.py` | Pre-commit hook: every docs page is in the `nav` of `zensical.toml` |
 | `docker-compose.yml` | PostgreSQL and MySQL for the server test backends |
@@ -114,4 +111,4 @@ See [Testing strategy](testing.md) for how they fit together.
 
 ## Next steps
 
-See how the pieces work together at runtime in [Architecture](architecture.md).
+See how the pieces work together in [Design overview](design-overview.md), and at runtime in [Architecture](architecture.md).

@@ -21,8 +21,8 @@ Who is this for: anyone sending a change to django-db-tenants.
 | Imports | isort order with `django_db_tenants`, `testutils`, `demo`, `notes` as first-party | ruff `I` |
 | Types | The package ships `py.typed`; new public functions get type hints | `ty check` |
 | Logging | Use the module logger (`logging.getLogger(__name__)`), never `print` | ruff `T20` |
-| Settings | Every option goes through `DB_TENANTS` and `conf.app_settings`; an optional module uses its own sub-dict (`DB_TENANTS["OIDC"]`, read by `oidc.conf.oidc_settings`); no new top-level Django settings | review |
-| Security | Secrets in models use `EncryptedTextField` or `EncryptedJSONField`; redirects are checked with `url_has_allowed_host_and_scheme` | ruff `S`, review |
+| Settings | Every option goes through `DB_TENANTS` and `conf.app_settings`; no new top-level Django settings | review |
+| Security | Secrets in models use `EncryptedTextField` or `EncryptedJSONField` | ruff `S`, review |
 
 Silence a lint rule only on the line that needs it, with the rule code and a reason: `# noqa: BLE001 - report per tenant and continue`.
 
@@ -104,19 +104,7 @@ Link to other pages with relative site paths ending in `/` (for example `../api/
 
 ## Release a version
 
-The version is written in two places, which must match:
-
-- `version` in `pyproject.toml`;
-- `__version__` in `src/django_db_tenants/__init__.py`.
-
-Steps:
-
-1. Update both values on a release branch, then run `uv lock` so the lock file records the new version.
-2. Run the full check: `uv run tox -p auto`, and make sure **CI passed** is green on the release branch.
-3. Build: `uv build`, and check the wheel as shown in [CI/CD and build](ci-cd.md#build-the-package). CI also builds both files on every run and keeps them as the `dist` artifact.
-4. Merge to `main` and tag the merge commit, for example `git tag v0.2.0 && git push origin v0.2.0`.
-
-No publishing to a package index is configured yet; uploading `dist/` (for example with `uv publish`) is a manual step for the maintainer.
+Maintainers must follow the release process described in [`RELEASE.md`](https://github.com/GigiusB/django-db-tenants/blob/develop/RELEASE.md), at the root of the repository.
 
 ## Next steps
 

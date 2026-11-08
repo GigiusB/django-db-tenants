@@ -23,12 +23,10 @@ DB_TENANTS = {
 | `CONTROL_HOSTS` | iterable of host names | `()` | Hosts that `resolve_by_host` serves from the shared database. Compared without port, case-insensitively |
 | `EXEMPT_PATHS` | iterable of path prefixes | `("/healthz",)` | Requests whose path starts with one of these skip resolution; `request.tenant` is `None` |
 | `NOT_FOUND_HANDLER` | dotted path, callable or `None` | `None` | `callable(request, exc) -> HttpResponse` for requests whose resolver raised `TenantError`. `None` returns `404 Unknown tenant.` |
-| `CACHE_ALIAS` | `str` | `"default"` | `CACHES` alias for host and slug lookups (and for `OidcStrategy`'s discovery metadata) |
+| `CACHE_ALIAS` | `str` | `"default"` | `CACHES` alias for host and slug lookups |
 | `CACHE_TTL` | `int`, seconds | `60` | Lifetime of the cached lookups; the longest a per-process cache can serve a stale client |
 | `ENCRYPTION_KEY` | `str` or `bytes`, or `None` | `None` | Fernet key for `db_params`. `None` derives a key from `SECRET_KEY`. See [Encryption](encryption.md) |
 `RESOLVER` and `NOT_FOUND_HANDLER` accept a dotted path, imported on each access, or the callable itself.
-
-The optional [`OidcStrategy`](oidc.md#settings) reads its settings from the `OIDC` sub-dict of `DB_TENANTS`.
 
 ## Other settings the library depends on
 

@@ -21,16 +21,9 @@ client.get_db_strategy()  # same, but raises ImproperlyConfigured if the class c
 
 `ensure_db_registered()` always resets `TEST["NAME"]` to `None` on what the strategy returns, so no strategy can make a test run reuse the template's test database.
 
-## Shipped strategies
-
-| Strategy | Registered | What it does |
-|---|---|---|
-| `django_db_tenants.strategies.TemplateOverlay` | always, the default | `DATABASES` keys from `db_params` laid over the template connection; `NAME = client.db_name` |
-| `django_db_tenants.oidc.OidcStrategy` | through `DATABASE_STRATEGIES` | `TemplateOverlay`, plus the client's OpenID Connect provider for per-tenant single sign-on. See [OIDC strategy](oidc.md) |
-
 ## `TemplateOverlay`
 
-The default for every client: the [template alias](../../glossary.md#template-alias) connection with the client's parameters laid over it. Its `db_params` are shaped like a Django `DATABASES` entry without `NAME`, which comes from `client.db_name`.
+The built-in strategy, always registered and the default for every client: the [template alias](../../glossary.md#template-alias) connection with the client's parameters laid over it. Its `db_params` are shaped like a Django `DATABASES` entry without `NAME`, which comes from `client.db_name`.
 
 | `db_params` key | Effect |
 |---|---|
@@ -115,6 +108,8 @@ The test suite ships this exact strategy (`tests/_extra/testutils/strategies.py`
 | `drop_database()` | for dropping | Drop the database if it exists |
 
 Inside a strategy, `self.client` is the `Client` and `self.params` its `db_params` (a dict).
+
+The `DbConnectionFactory` protocol declares these members. `Client.get_db_strategy()` is typed with it, so the callers above depend on the interface, not on `DatabaseStrategy`. Strategies still subclass `DatabaseStrategy`: the `db_strategy` field accepts only its registered subclasses.
 
 ### Registration
 

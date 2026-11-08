@@ -1,6 +1,6 @@
 # Install once with:  uv run pre-commit install
 # Run on everything:  uv run pre-commit run --all-files   (or: uv run tox -e lint)
-default_install_hook_types: [pre-commit]
+default_install_hook_types: [pre-commit, commit-msg]
 default_language_version:
   python: python3
 exclude: ^tests/demo/var/
@@ -21,6 +21,12 @@ repos:
       - id: mixed-line-ending
         args: [--fix=lf]
       - id: trailing-whitespace
+
+  # Commit messages follow Conventional Commits: `cz bump` derives the version from them (RELEASE.md).
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.19.3
+    hooks:
+      - id: commitizen
 
   - repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.27

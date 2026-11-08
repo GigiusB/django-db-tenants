@@ -60,17 +60,14 @@ python manage.py provision_tenant acme \
     --db-name tenant_acme
 ```
 
-Tenant on its own server, two domains, signing in through Entra ID with the optional [`OidcStrategy`](../api/oidc.md):
+Tenant on its own server, two domains:
 
 ```bash
 python manage.py provision_tenant globex \
     --name "Globex Corporation" \
     --domain globex.example.com --domain portal.globex.com \
     --db-name globex --db-host db2.internal --db-user globex --db-password "$GLOBEX_DB_PASSWORD" \
-    --db-strategy django_db_tenants.oidc.OidcStrategy \
-    --db-params '{"OPTIONS": {"sslmode": "require"},
-                  "SSO": {"ISSUER": "https://login.microsoftonline.com/<tenant-id>/v2.0",
-                          "CLIENT_ID": "...", "CLIENT_SECRET": "..."}}'
+    --db-params '{"OPTIONS": {"sslmode": "require"}}'
 ```
 
 Tenant using a custom strategy (see [Write your own strategy](../api/strategies.md#write-your-own-strategy)):

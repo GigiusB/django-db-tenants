@@ -24,10 +24,7 @@ DB_TENANTS = {
     "CONTROL_HOSTS": ["control.test"],
     "ENCRYPTION_KEY": "MZYwaxOSOeZTj-cTJPpsl3HGW-TyjrKciRexyxY2mHc=",
     "CACHE_TTL": 60,
-    "DATABASE_STRATEGIES": ["testutils.strategies.EnvironmentPassword", "django_db_tenants.oidc.OidcStrategy"],
+    "DATABASE_STRATEGIES": ["testutils.strategies.EnvironmentPassword"],
 }
-
-# The demo's URLs plus the optional OIDC login views.
-ROOT_URLCONF = "testutils.urls"
 
 LOGGING = {"version": 1, "disable_existing_loggers": False}

@@ -34,7 +34,6 @@ Integration points referenced from settings by dotted path are public too: `Tena
 | [Provisioning](provisioning.md) | `provisioning` | Create and migrate tenant databases |
 | [Background tasks](tasks.md) | `tasks` | Run tasks and batch jobs per tenant |
 | [Cache isolation](cache.md) | `cache` | Namespace cache keys per tenant |
-| [OIDC strategy](oidc.md) | `oidc` | Optional: per-tenant OpenID Connect single sign-on with `OidcStrategy` |
 | [Encryption](encryption.md) | `fields`, `crypto` | Encrypt secrets at rest |
 | [Admin](admin.md) | `admin` | Manage clients in the Django admin |
 | [Exceptions](exceptions.md) | `exceptions` | Handle resolution errors |

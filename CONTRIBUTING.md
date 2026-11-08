@@ -17,7 +17,7 @@ This page gets you from a fresh clone to a passing test run. The [developer's gu
 git clone https://github.com/GigiusB/django-db-tenants.git
 cd django-db-tenants
 uv sync                     # .venv with the library (editable) and the dev group: tests, ruff, ty, docs, tox
-uv run pre-commit install   # ruff, ty, django-upgrade, uv-lock, ... on every commit
+uv run pre-commit install   # ruff, ty, django-upgrade, uv-lock, ... and the commit message format, on every commit
 ```
 
 For the PostgreSQL and MySQL backends:
@@ -35,7 +35,7 @@ Optionally, `cp .envrc.example .envrc && direnv allow` loads `.env` and activate
 uv run pytest                     # SQLite: no server needed
 TEST_DB=pg uv run pytest          # PostgreSQL, connection from .env
 TEST_DB=mysql uv run pytest       # MySQL, connection from .env
-uv run pytest tests/test_oidc.py -k callback   # a subset
+uv run pytest tests/test_middleware.py -k header  # a subset
 ```
 
 Every tenant in a test gets a real database of its own, cloned from a template migrated once per session, and dropped when the test ends. The fixtures (`acme`, `globex`, `tenant_factory`, ...) and factories are in `tests/_extra/testutils`; see [Testing strategy](docs/development-guide/testing.md) to write new tests.
@@ -67,4 +67,4 @@ Then open <http://acme.localhost:8000/> and log in as `alice` / `demo`. See [`te
 
 ## Send a change
 
-Work on a branch, add tests, update the pages of `docs/` that describe what you changed, and run `uv run tox -p auto` (or at least `uv run tox -e py313-dj52-sqlite,lint,type,docs`) before opening a pull request against `main`. The [Contribution guidelines](docs/development-guide/contributing.md) list the code standards and recipes for common changes.
+Work on a branch, add tests, update the pages of `docs/` that describe what you changed, and run `uv run tox -p auto` (or at least `uv run tox -e py313-dj52-sqlite,lint,type,docs`) before opening a pull request against `develop`. Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat: ...`, `fix: ...`); maintainers release as described in [RELEASE.md](RELEASE.md). The [Contribution guidelines](docs/development-guide/contributing.md) list the code standards and recipes for common changes.

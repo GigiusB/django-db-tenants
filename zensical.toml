@@ -24,6 +24,7 @@ nav = [
     { "Quick start" = "development-guide/quick-start.md" },
     { "Local environment setup" = "development-guide/local-setup.md" },
     { "Codebase structure" = "development-guide/codebase-structure.md" },
+    { "Design overview" = "development-guide/design-overview.md" },
     { "Architecture" = "development-guide/architecture.md" },
     { "Model reference" = [
       "development-guide/models/index.md",
@@ -49,7 +50,6 @@ nav = [
       { "Provisioning" = "development-guide/api/provisioning.md" },
       { "Background tasks" = "development-guide/api/tasks.md" },
       { "Cache isolation" = "development-guide/api/cache.md" },
-      { "OIDC strategy" = "development-guide/api/oidc.md" },
       { "Encryption" = "development-guide/api/encryption.md" },
       { "Admin" = "development-guide/api/admin.md" },
       { "Exceptions" = "development-guide/api/exceptions.md" },

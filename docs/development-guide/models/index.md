@@ -13,7 +13,7 @@ The library ships two models, both in the [shared database](../../glossary.md#sh
 
 ![Data model of django-db-tenants: Client and ClientDomain in the shared database; User, Session and an example tenant app in each tenant database](data-model.drawio.png)
 
-The diagram also shows the database strategy classes behind `Client.db_strategy`, Django's `User` and `Session`, because the library routes them to the tenant database (and the optional OIDC user sync reads and writes `User`), and the demo project's `Note`, as an example of a tenant-app table. Only the fields that matter to the library are drawn for them.
+The diagram also shows the database strategy classes behind `Client.db_strategy`, Django's `User` and `Session`, because the library routes them to the tenant database, and the demo project's `Note`, as an example of a tenant-app table. Only the fields that matter to the library are drawn for them.
 
 ### How to read it
 
@@ -22,7 +22,7 @@ The diagram also shows the database strategy classes behind `Client.db_strategy`
 - `<Status>` is a field typed by the `<<choices>>` box of the same name (`Client.Status`).
 - An arrow is a foreign key, pointing at the referenced entity; a 2 px line is a mandatory foreign key. The key column is named after the target (`ClientDomain` to `Client` is `client_id`) unless the arrow has a label (`author`).
 - The bottom compartment of `Client` lists computed values (properties and methods).
-- `<<strategy>>` boxes are Python classes, not tables: the [database strategies](../api/strategies.md) a client can use through `db_strategy`. `TemplateOverlay` inherits from `DatabaseStrategy` and `OidcStrategy` from `TemplateOverlay` (hollow-triangle arrows); their rows are the `db_params` keys they add (`SSO.*` are the keys of the `SSO` object). `OidcStrategy` is optional (`django_db_tenants.oidc`); the `<<dataclass>>` `OidcConfig` is what its `oidc_config()` returns.
+- `<<strategy>>` boxes are Python classes, not tables: the [database strategies](../api/strategies.md) a client can use through `db_strategy`. `TemplateOverlay` inherits from `DatabaseStrategy` (hollow-triangle arrow); its rows are the `db_params` keys it accepts.
 - Colours mark the database a table lives in; the legend in the top-right corner explains them.
 
 ### Edit the diagram

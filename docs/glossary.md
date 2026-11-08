@@ -26,14 +26,6 @@ A URL path prefix listed in `DB_TENANTS["EXEMPT_PATHS"]` (default `/healthz`). T
 
 The symmetric encryption scheme from the `cryptography` package. The library uses it to encrypt `Client.db_params` (database passwords and other strategy secrets) at rest. See [Encryption](development-guide/api/encryption.md).
 
-## IdP
-
-Identity provider: the OpenID Connect server that authenticates a tenant's users (for example Entra ID, Okta, Keycloak).
-
-## OIDC
-
-OpenID Connect, the authentication layer on top of OAuth 2.0 that the optional `OidcStrategy` uses for per-tenant single sign-on. See [OIDC strategy](development-guide/api/oidc.md).
-
 ## Provisioning
 
 Onboarding a client's database: create it (through the client's [database strategy](#database-strategy)), run migrations on it and mark the client `active`. Done by `provision()`, the `provision_tenant` command or the admin action. See [Provisioning](development-guide/api/provisioning.md).
@@ -41,10 +33,6 @@ Onboarding a client's database: create it (through the client's [database strate
 ## Resolver
 
 A callable `resolver(request) -> Client | None` that tells the middleware which tenant a request belongs to. Set with `DB_TENANTS["RESOLVER"]`. See [Resolvers](development-guide/api/resolvers.md).
-
-## RP-initiated logout
-
-OpenID Connect logout started by the relying party (the Django site): after the local logout, the browser is sent to the IdP's `end_session_endpoint` so the IdP session ends too.
 
 ## Runtime registration
 

@@ -84,6 +84,7 @@ class ClientDomain(models.Model):
 
     class Meta:
         ordering = ["-is_primary", "domain"]
+        unique_together = [["domain", "client"]]
 
     def __str__(self):
         return self.domain
