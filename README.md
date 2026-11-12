@@ -1,6 +1,13 @@
 # django-db-tenants
 
-[![CI](https://github.com/GigiusB/django-db-tenants/actions/workflows/ci.yml/badge.svg)](https://github.com/GigiusB/django-db-tenants/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/GigiusB/django-db-tenants/ci.yml?branch=main&label=CI&logo=github&logoColor=white&style=flat-square)](https://github.com/GigiusB/django-db-tenants/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/github/actions/workflow/status/GigiusB/django-db-tenants/docs.yml?branch=develop&label=docs&logo=github&logoColor=white&style=flat-square)](https://github.com/GigiusB/django-db-tenants/actions/workflows/docs.yml)
+[![Coverage](https://img.shields.io/codecov/c/github/GigiusB/django-db-tenants?style=flat-square)](https://codecov.io/gh/GigiusB/django-db-tenants)
+[![PyPI version](https://img.shields.io/pypi/v/django-db-tenants.svg?style=flat-square)](https://pypi.org/project/django-db-tenants/)
+[![Python versions](https://img.shields.io/pypi/pyversions/django-db-tenants.svg?style=flat-square)](https://pypi.org/project/django-db-tenants/)
+[![Django versions](https://img.shields.io/badge/Django-4.2%20%7C%205.2%20%7C%206.0%20%7C%206.1-092E20?style=flat-square&logo=django&logoColor=white)](https://pypi.org/project/django-db-tenants/)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=flat-square)](https://conventionalcommits.org)
+[![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue?style=flat-square)](https://github.com/GigiusB/django-db-tenants/blob/main/LICENSE.md)
 
 Database-per-client multi-tenancy for Django.
 
