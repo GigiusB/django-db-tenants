@@ -179,7 +179,7 @@ class TemplateOverlay(DatabaseStrategy):
     def _postgres_cursor(self, server: BaseDatabaseWrapper) -> Generator[Any]:
         """Autocommit cursor on the maintenance database: CREATE/DROP DATABASE cannot run in a transaction."""
         cfg = server.settings_dict
-        conn = server.Database.connect(  # ty: ignore[unresolved-attribute] - psycopg or psycopg2, whichever Django loaded
+        conn = server.Database.connect(  # ty: ignore[missing-attribute] - psycopg or psycopg2, whichever Django loaded
             dbname=self.params.get("MAINTENANCE_DB") or "postgres",
             user=cfg.get("USER") or None,
             password=cfg.get("PASSWORD") or None,

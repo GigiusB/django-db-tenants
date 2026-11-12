@@ -51,7 +51,7 @@ test = [
 ]
 lint = [
     "ruff>=0.15",
-    "ty>=0.0.90",
+    "ty==0.0.101",
     "django-stubs>=5.2",
     "pre-commit>=4",
 ]

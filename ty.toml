@@ -8,4 +8,4 @@ include = ["src", "tests"]
 # factory_boy's `class Meta` options are not subclasses of the base factory's Meta.
 [[overrides]]
 include = ["tests/_extra/testutils/factories.py"]
-rules = { invalid-attribute-override = "ignore" }
+rules = { incompatible-attribute-override = "ignore" }

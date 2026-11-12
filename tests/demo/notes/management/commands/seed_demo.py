@@ -37,5 +37,5 @@ class Command(BaseCommand):
             with tenant_context(slug):  # users live in the tenant database
                 users = get_user_model()._default_manager
                 if not users.filter(username=username).exists():
-                    users.create_user(username, f"{username}@{slug}.localhost", "demo")  # ty: ignore[unresolved-attribute]
+                    users.create_user(username, f"{username}@{slug}.localhost", "demo")  # ty: ignore[missing-attribute]
             self.stdout.write(f"  http://{slug}.localhost:8000/  user={username} password=demo")
