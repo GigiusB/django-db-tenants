@@ -38,7 +38,7 @@ jobs:
       # The `ty` pre-commit hook runs `uv run`, which installs the dev group, mysqlclient included.
       - name: Install MySQL client headers
         if: matrix.env == 'lint'
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libmysqlclient-dev pkg-config
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libmariadb-dev pkg-config
       - name: Cache pre-commit environments
         if: matrix.env == 'lint'
         uses: actions/cache@v4
@@ -152,7 +152,7 @@ jobs:
       - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
       # mysqlclient has no Linux wheels: it is compiled against the client headers.
       - name: Install MySQL client headers
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libmysqlclient-dev pkg-config
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libmariadb-dev pkg-config
       - run: $TOX -e ${{ matrix.env }}-mysql
 
   # One required check for branch protection, whatever the matrix contains.

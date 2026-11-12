@@ -14,5 +14,5 @@ def note_list(request: HttpRequest) -> HttpResponse:
         note.author = request.user
         note.save()
         return redirect("notes:list")
-    notes = request.user.notes.all()  # ty: ignore[unresolved-attribute]
+    notes = request.user.notes.all()  # ty: ignore[missing-attribute]
     return render(request, "notes/note_list.html", {"notes": notes, "form": form})

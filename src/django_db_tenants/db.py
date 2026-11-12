@@ -70,7 +70,7 @@ def unregister_db(alias: str) -> None:
 
 def _close_thread_connection(alias: str) -> None:
     try:
-        conn = getattr(connections._connections, alias)  # ty: ignore[unresolved-attribute] - thread-local store
+        conn = getattr(connections._connections, alias)  # ty: ignore[missing-attribute] - thread-local store
     except AttributeError:
         return
     try:
@@ -79,4 +79,4 @@ def _close_thread_connection(alias: str) -> None:
         try:
             del connections[alias]
         except (AttributeError, TypeError):  # pragma: no cover - older Django without __delitem__
-            delattr(connections._connections, alias)  # ty: ignore[unresolved-attribute]
+            delattr(connections._connections, alias)  # ty: ignore[missing-attribute]

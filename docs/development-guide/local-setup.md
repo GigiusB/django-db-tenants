@@ -8,7 +8,7 @@ Who is this for: contributors who need the whole toolchain, including the Postgr
 |---|---|---|
 | [uv](https://docs.astral.sh/uv/) | Python, virtual environment, dependencies, running every tool | Installs Python 3.13 from `.python-version` when missing |
 | Python 3.11 or newer | Supported range starts at 3.11 (`requires-python = ">=3.11"`) | tox also needs the interpreters of the matrix (3.11, 3.12, 3.15); uv downloads them |
-| MySQL client headers | `mysqlclient` is compiled on install | `libmysqlclient-dev` on Debian/Ubuntu, `mysql-devel` or `mariadb-connector-c-devel` elsewhere |
+| MySQL client headers | `mysqlclient` is compiled on install | `libmariadb-dev` (or `libmysqlclient-dev`) on Debian/Ubuntu, `mysql-devel` or `mariadb-connector-c-devel` elsewhere |
 | Docker with Compose | Optional: PostgreSQL and MySQL servers for the `pg` and `mysql` test environments | Any PostgreSQL 15+ / MySQL 8.4+ server works too |
 | [direnv](https://direnv.net/) | Optional: loads `.env` and activates `.venv` on `cd` | See [Environment files](#environment-files) |
 

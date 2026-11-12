@@ -15,7 +15,7 @@ The workflow is `.github/workflows/ci.yml` (**CI**). It runs on pull requests, o
 | `coverage` | one SQLite test environment with `--cov-report=term --cov-report=xml`, then uploads the XML to Codecov | Uses the `CODECOV_TOKEN` repository secret; fork PRs skip the upload |
 | `<python>-<django>-sqlite` | the 8 SQLite test environments | |
 | `<python>-<django>-pg` | the 8 PostgreSQL test environments | PostgreSQL 16 service container, `TEST_PG_*` set to match it |
-| `<python>-<django>-mysql` | the 8 MySQL test environments | MySQL 8.4 service container, `TEST_MYSQL_*` set to match it; installs `libmysqlclient-dev` to build `mysqlclient` |
+| `<python>-<django>-mysql` | the 8 MySQL test environments | MySQL 8.4 service container, `TEST_MYSQL_*` set to match it; installs `libmariadb-dev` to build `mysqlclient` |
 | **CI passed** | nothing | Fails when any job above failed or was cancelled |
 
 Every job installs uv with `astral-sh/setup-uv` and runs tox through `uvx` with the versions `tox.ini` requires; uv downloads each Python interpreter of the matrix. Matrix jobs run with `fail-fast: false`, so one failing combination does not hide the others.

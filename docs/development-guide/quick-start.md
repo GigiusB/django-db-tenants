@@ -12,7 +12,7 @@ cd tests/demo && uv run python manage.py migrate && uv run python manage.py seed
 ## Prerequisites
 
 - [uv](https://docs.astral.sh/uv/). It installs the Python version pinned in `.python-version` (3.13) when it is missing.
-- The MySQL client headers (`libmysqlclient-dev` or your platform's equivalent). `uv sync` builds `mysqlclient` from the `db` dependency group; see [Local environment setup](local-setup.md#install-the-dependencies) to skip it.
+- The MySQL client headers (`libmariadb-dev` or `libmysqlclient-dev` on Debian/Ubuntu, or your platform's equivalent). `uv sync` builds `mysqlclient` from the `db` dependency group; see [Local environment setup](local-setup.md#install-the-dependencies) to skip it.
 
 ## 1. Install
 
