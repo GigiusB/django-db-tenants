@@ -121,7 +121,7 @@ Guidelines:
 uv run pytest --cov --cov-report=term
 ```
 
-`.coveragerc.toml` measures the `django_db_tenants` package with branch coverage, shows missing lines and hides fully covered files. Under tox each environment writes its own data file (`COVERAGE_FILE={env_dir}/.coverage`).
+`.coveragerc.toml` measures the `django_db_tenants` package with branch coverage, shows missing lines and hides fully covered files. Under tox each environment writes its own data file (`COVERAGE_FILE={env_dir}/.coverage`). CI uploads the XML report from its `coverage` job to Codecov.
 
 ## Next steps
 

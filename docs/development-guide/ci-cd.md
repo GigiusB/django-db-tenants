@@ -12,6 +12,7 @@ The workflow is `.github/workflows/ci.yml` (**CI**). It runs on pull requests, o
 |---|---|---|
 | `lint`, `type`, `docs` | `tox -e lint`, `tox -e type`, `tox -e docs` | `lint` caches the pre-commit environments, keyed on `.pre-commit-config.yaml` |
 | `build` | `uv build`, then imports the wheel in a clean environment | Uploads `dist/` (sdist and wheel) as the `dist` artifact of the run |
+| `coverage` | one SQLite test environment with `--cov-report=term --cov-report=xml`, then uploads the XML to Codecov | Uses the `CODECOV_TOKEN` repository secret; fork PRs skip the upload |
 | `<python>-<django>-sqlite` | the 8 SQLite test environments | |
 | `<python>-<django>-pg` | the 8 PostgreSQL test environments | PostgreSQL 16 service container, `TEST_PG_*` set to match it |
 | `<python>-<django>-mysql` | the 8 MySQL test environments | MySQL 8.4 service container, `TEST_MYSQL_*` set to match it; installs `libmysqlclient-dev` to build `mysqlclient` |
@@ -28,7 +29,7 @@ To require CI before merging, protect `main` in **Settings > Branches** and add 
     uv run tox -l
     ```
 
-Coverage is printed in each test job's log (`--cov-report=term`); it is not uploaded to a coverage service.
+Coverage is printed in each test job's log (`--cov-report=term`). The `coverage` job reruns one SQLite environment with `--cov-report=xml` and uploads the report to Codecov with the `CODECOV_TOKEN` repository secret. Pull requests from forks do not receive repository secrets, so the upload step is skipped there instead of failing the job.
 
 ## Checks a change must pass
 
